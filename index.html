@@ -3,67 +3,77 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Typescript playground on ace editor</title>
     <meta name="description" content="Typescript playground on ace editor" /><meta>
-    <link type="text/css" rel="stylesheet" href="stylesheets/bootstrap.min.css" />
+    
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bower_components/bootswatch/flatly/bootstrap.css">
+    
     <link type="text/css" rel="stylesheet" href="stylesheets/style.css" />
 </head>
 <body>
-
-<div class="fluid-container" style="padding:5px">
-    <div>
-        <h1>TypeScript Editor</h1>
-        <a href="https://github.com/basarat/TypeScriptEditor"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>
-        <div style="padding:10px">
-            <p>
-                A TypeScript Editor with compiler support
-            </p>
-            <p>
-            <ul>
-                <li>shortcut key [Ctrl-Space] : AutoComplete</li>
-                <li>shortcut key [F2] : Rename</li>
-            </ul>
-            </p>
+    
+    
+        
+    <!-- Static navbar -->
+    <nav class="navbar navbar-default navbar-static-top">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#"><b>RefScript</b></a>
+            </div>
+            <!--<ul class="nav navbar-nav">
+                <li class="active"><a href="#">Home</a></li>
+                <li><a href="#">Page 1</a></li>
+                <li><a href="#">Page 2</a></li>
+                <li><a href="#">Page 3</a></li>
+            </ul>-->
         </div>
-    </div>
+    </nav>
 
-    <div class="editor-area">
-        <div class="warp-container">
-            <div class="langauge-title" style="float:left">
-                <div style="float:left">
-                    <h2>typescript</h2>
-                </div>
-                <div style="float:left;padding-top:5px;padding-left:20px">
-                    <select id="select-sample">
-                        <option selected="selected" value="greeter.ts">Walkthrough:Classes</option>
-                        <option value="raytracer.ts">Raytracer</option>
-                        <option value="animal.ts">Simple inheritance</option>
 
-                    </select>
+        <div class="container">            
+            <div class="row">
+                <div class="col-md-3">
+                    <script type="text/x-template" id="item-template">
+                        <li>
+                            <div
+                            :class="{bold: isFolder}"
+                            @click="toggle"
+                            @dblclick="changeType">
+                            {{model.name}}
+                            <span v-if="isFolder">[{{open ? '-' : '+'}}]</span>
+                            </div>
+                            <ul v-show="open" v-if="isFolder">
+                            <item
+                                class="item"
+                                v-for="model in model.children"
+                                :model="model">
+                            </item>
+                            </ul>
+                        </li>
+                    </script>
+                    <div style="overflow:auto; height: 500px; position: relative; border: 1px solid grey;" >
+                        <ul id="demo">
+                            <item class="item" :model="treeData">
+                            </item>
+                        </ul>
+                    </div>                    
                 </div>
-                <div style="clear:both"></div>
-            </div>
-            <div class="editor-container">
-                <div id="editor">
+            
+                <div class="col-md-9">
+                    <!--<div class="editor-container">-->
+                    <div class="row">
+                        <div id="editor"></div>
+                    </div>
+                    <div class="row" style="margin-top:5px;">                    
+                        <button id="verify" type="button" class="btn btn-primary" style="width:100%; height:60px"><b>Verify</b></button>
+                    </div>                                        
                 </div>
-            </div>
+                    <!--</div>-->
+            </div>            
         </div>
 
-        <div class="warp-container">
-            <div class="langauge-title" style="float:right">
-                <div style="float:left">
-                    <div id="javascript-run">Run</div>
-                </div>
-                <div style="float:left;margin-left:10px">
-                    <h2>javascript</h2>
-                </div>
-            </div>
-            <div style="clear:both"></div>
-            <div class="editor-container" style="float:right">
-                <div id="output">
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+
+
 
 </body>
 

@@ -1,0 +1,25 @@
+{
+  "name": "public",
+  "homepage": "https://github.com/panagosg7/www-refscript-ts",
+  "authors": [
+    "Panagiotis Vekris <pvekris@cs.ucsd.edu>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootswatch": "^3.3.6+1",
+    "vue": "^1.0.22",
+    "underscore": "^1.8.3",
+    "winjs": "^4.4.0",
+    "ace": "^1.2.3",
+    "ace-builds": "^1.2.3"
+  }
+}

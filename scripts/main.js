@@ -19,7 +19,6 @@ define(["require", "exports", "./utils", 'ace/ace', 'ace/range', './AutoComplete
     exports.defaultFormatCodeOptions = defaultFormatCodeOptions;
     var aceEditorPosition = null;
     var editor = null;
-    var outputEditor = null;
     var docUpdateCount = 0;
     var selectFileName = "";
     var syncStop = false;
@@ -213,13 +212,8 @@ define(["require", "exports", "./utils", 'ace/ace', 'ace/range', './AutoComplete
     }
     $(function () {
         editor = ace.edit("editor");
-        editor.setTheme("ace/theme/monokai");
         editor.getSession().setMode('ace/mode/typescript');
-        outputEditor = ace.edit("output");
-        outputEditor.setTheme("ace/theme/monokai");
-        outputEditor.getSession().setMode('ace/mode/javascript');
         document.getElementById('editor').style.fontSize = '14px';
-        document.getElementById('output').style.fontSize = '14px';
         loadLibFiles();
         loadFile("samples/greeter.ts");
         editor.addEventListener("change", onUpdateDocument);
@@ -267,9 +261,6 @@ define(["require", "exports", "./utils", 'ace/ace', 'ace/range', './AutoComplete
                 autoComplete.deactivate();
             }
         });
-        editor.getSession().on("compiled", function (e) {
-            outputEditor.getSession().doc.setValue(e.data);
-        });
         editor.getSession().on("compileErrors", function (e) {
             var session = editor.getSession();
             errorMarkers.forEach(function (id) {
@@ -283,12 +274,10 @@ define(["require", "exports", "./utils", 'ace/ace', 'ace/range', './AutoComplete
                 errorMarkers.push(session.addMarker(range, "typescript-error", "text", true));
             });
         });
-        $("#javascript-run").click(function (e) {
-            utils_1.javascriptRun(outputEditor.getSession().doc.getValue());
-        });
         $("#select-sample").change(function (e) {
             var path = "samples/" + $(this).val();
             loadFile(path);
         });
     });
+    console.log('Reached here');
 });

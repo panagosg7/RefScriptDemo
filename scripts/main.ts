@@ -27,7 +27,7 @@ export function defaultFormatCodeOptions(): ts.FormatCodeOptions {
 
 var aceEditorPosition = null;
 var editor:AceAjax.Editor = null;
-var outputEditor:AceAjax.Editor = null;
+// var outputEditor:AceAjax.Editor = null;
 var docUpdateCount = 0;
 
 var selectFileName = "";
@@ -263,14 +263,14 @@ function workerOnCreate(func, timeout){
 
 $(function(){
     editor = ace.edit("editor");
-    editor.setTheme("ace/theme/monokai");
+    // editor.setTheme("ace/theme/monokai");
     editor.getSession().setMode('ace/mode/typescript');
 
-    outputEditor = ace.edit("output");
-    outputEditor.setTheme("ace/theme/monokai");
-    outputEditor.getSession().setMode('ace/mode/javascript');
+    // outputEditor = ace.edit("output");
+    // outputEditor.setTheme("ace/theme/monokai");
+    // outputEditor.getSession().setMode('ace/mode/javascript');
     document.getElementById('editor').style.fontSize='14px';
-    document.getElementById('output').style.fontSize='14px';
+    // document.getElementById('output').style.fontSize='14px';
 
     loadLibFiles();
     loadFile("samples/greeter.ts");
@@ -328,9 +328,9 @@ $(function(){
         }
     });
 
-    editor.getSession().on("compiled", function(e){
-        outputEditor.getSession().doc.setValue(e.data);
-    });
+    // editor.getSession().on("compiled", function(e){
+    //     outputEditor.getSession().doc.setValue(e.data);
+    // });
 
     editor.getSession().on("compileErrors", function(e){
         var session = editor.getSession();
@@ -347,9 +347,9 @@ $(function(){
     });    
     
 
-    $("#javascript-run").click(function(e){
-        javascriptRun(outputEditor.getSession().doc.getValue());
-    });
+    // $("#javascript-run").click(function(e){
+    //     javascriptRun(outputEditor.getSession().doc.getValue());
+    // });
 
     $("#select-sample").change(function(e){
         var path = "samples/" + $(this).val();
@@ -357,3 +357,5 @@ $(function(){
     });
 
 });
+
+console.log('Reached here')

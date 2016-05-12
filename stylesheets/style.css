@@ -1,5 +1,5 @@
 body{
-    background: #333;
+    /*background: #333;*/
     color: white;
 }
 
@@ -30,28 +30,9 @@ body{
     float:left;
 }
 #editor {
-    position:absolute;
-    max-height:10000px;
-    top: 6px;
-    right: 0;
-    bottom: 0;
-    left: 0;
-}
-
-#output {
-    position:absolute;
-    max-height:10000;
-    top: 6px;
-    right: 0;
-    bottom: 0;
-    left: 10;
-}
-
-.editor-area{
-    height: auto;
-    padding-bottom: 50px;
-    height:calc(100% - 220px);
-    /* margin-bottom:20px; */
+    position:relative;
+    height:435px;
+    border: 1px solid grey;
 }
 
 .typescript-ref{

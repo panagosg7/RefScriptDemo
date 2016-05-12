@@ -266,6 +266,16 @@ function workerOnCreate(func, timeout){
 }
 
 
+function removeAllMarkers(session: AceAjax.IEditSession) {
+    _.values(session.getMarkers(true)).forEach(v => { 
+        session.removeMarker(v.id); 
+    });
+    _.values(session.getMarkers(false)).forEach(v => { 
+        session.removeMarker(v.id); 
+    });        
+}
+
+
 $(function(){
     editor = ace.edit("editor");
     // editor.setTheme("ace/theme/monokai");
@@ -339,8 +349,8 @@ $(function(){
 
     editor.getSession().on("compileErrors", function(e){
         let session = editor.getSession();
-        errorMarkers.forEach(session.removeMarker);
-        rscMarkers.forEach(session.removeMarker);
+        removeAllMarkers(session);
+        
         e.data.forEach(error => {
             let getpos = aceEditorPosition.getAcePositionFromChars;
             let start = getpos(error.minChar);
@@ -440,7 +450,9 @@ Vue.component('item', {
                 xhr.addEventListener('readystatechange', function (e) {
                    if (xhr.readyState == 4 && xhr.status == 200) {
                         let fileText = '// file: ' + chain + '\n' + xhr.responseText;
-                        editor.setValue(fileText);
+                        let session = editor.getSession();                        
+                        removeAllMarkers(session);
+                        session.setValue(fileText);                        
                     }
                 });
             }
@@ -461,6 +473,26 @@ Vue.component('item', {
 });
 
 
+interface RscError {
+    errLoc: {
+        sp_start: [string, number, number]; // file, row, col
+        sp_stop: [string, number, number];
+    };
+    errMsg: {
+        contents: string[];
+    }
+}
+
+function rscErrorToAnnotation(e: RscError) {
+    return {
+        row: e.errLoc.sp_start[1] - 1,
+        column: e.errLoc.sp_start[2] - 1,
+        text: e.errMsg.contents.join(''),
+        type: 'error'
+    };
+}
+
+
 document.getElementById("verify").onclick = function () {
     let text = editor.getValue();
     // console.log(text)
@@ -472,47 +504,32 @@ document.getElementById("verify").onclick = function () {
     xhr.send(data);
     xhr.addEventListener('readystatechange', function (e) {
         if (xhr.readyState == 4 && xhr.status == 200) {
-            let response = xhr.responseText;            
+            let response = xhr.responseText;
             try {
                 let responseJSON = JSON.parse(response);
-                
-                let errs = _.flatten(responseJSON);
+
+                let errs: RscError[] = _.flatten(responseJSON);
                 let isSafe = errs.length === 0;
 
                 if (isSafe) {
                     // safeButton();
                     console.log('SAFE');
-                } else {
-                    // unsafeButton();
-                    console.log(errs);                    
-                    
+                } else {                    
                     let session = editor.getSession();
-                    errorMarkers.forEach(session.removeMarker);
-                    rscMarkers.forEach(session.removeMarker);     
-                    
-                    
+                    removeAllMarkers(session);                    
                     errs.forEach(error => {
-                        
                         let getpos = aceEditorPosition.getAcePositionFromChars;
                         let startRow = error.errLoc.sp_start[1] - 1;
                         let startCol = error.errLoc.sp_start[2] - 1;
                         let endRow   = error.errLoc.sp_stop[1] - 1;
                         let endCol   = error.errLoc.sp_stop[2] - 1;
                         let range = new AceRange(startRow, startCol, endRow, endCol);
-                        
-                        // editor.session.clearAnnotations();
-                        console.log(error, range)
-                        rscMarkers.push(editor.session.addMarker(range, "refscript-error", "text", true)); 
-                              
-                        // editor.session.setAnnotations([{ 
-                        //             row: 1, 
-                        //             column: 2, 
-                        //             text: "Strange error", 
-                        //             type: "info" 
-                        //             }]); 
-               
+                        rscMarkers.push(session.addMarker(range, "refscript-error", "text", true));
                     });
+
+                    session.setAnnotations(errs.map(rscErrorToAnnotation));
                 }
+
             } catch(e) {
                 // oops...
                 console.log("Error while parsing output of rsc:");

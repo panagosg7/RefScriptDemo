@@ -29,25 +29,26 @@ export function defaultFormatCodeOptions(): ts.FormatCodeOptions {
     };
 }
 
-var aceEditorPosition = null;
-var editor:AceAjax.Editor = null;
-// var outputEditor:AceAjax.Editor = null;
-var docUpdateCount = 0;
+let aceEditorPosition = null;
+let editor:AceAjax.Editor = null;
+// let outputEditor:AceAjax.Editor = null;
+let docUpdateCount = 0;
 
-var selectFileName = "";
+let selectFileName = "";
 
-var syncStop = false; //for stop sync on loadfile
-var autoComplete = null;
-var refMarkers = [];
-var errorMarkers =[];
+let syncStop = false; //for stop sync on loadfile
+let autoComplete = null;
+let refMarkers = [];
+let errorMarkers = [];
+let rscMarkers = [];
 
 // Start updating latest
 import {getTSProject} from "./lib/ace/mode/typescript/tsProject";
-var tsProject = getTSProject();
+let tsProject = getTSProject();
 
 function loadLibFiles(){
 
-    var libFiles = ["typescripts/lib.d.ts"];
+    let libFiles = ["typescripts/lib.d.ts"];
 
     // Load files here
     libFiles.forEach(function(libname){
@@ -60,7 +61,7 @@ function loadLibFiles(){
     workerOnCreate(function(){//TODO use worker init event
         libFiles.forEach(function(libname){
             readFile(libname, function(content){
-                var params = {
+                let params = {
                     data: {
                         name:libname,
                         content:content
@@ -76,7 +77,7 @@ function loadFile(filename) {
     readFile(filename, function(content){
         selectFileName = filename;
         syncStop = true;
-        var data = content.replace(/\r\n?/g,"\n");
+        let data = content.replace(/\r\n?/g,"\n");
         editor.setValue(data);
         editor.moveCursorTo(0, 0);
         tsProject.languageServiceHost.addScript(filename, editor.getSession().getDocument().getValue());
@@ -102,15 +103,14 @@ function onUpdateDocument(e: AceAjax.EditorChangeEvent) {
 
 // TODO check column
 function updateMarker(data:AceAjax.EditorChangeEvent){
-    var action = data.action;
-    var action = data.action;
-    var start = aceEditorPosition.getPositionChars(data.start);
-    var end = aceEditorPosition.getPositionChars(data.end);
-    var newText = editor.getSession().getTextRange(new AceRange(data.start.row, data.start.column, data.end.row, data.end.column));
+    let action = data.action;
+    let start = aceEditorPosition.getPositionChars(data.start);
+    let end = aceEditorPosition.getPositionChars(data.end);
+    let newText = editor.getSession().getTextRange(new AceRange(data.start.row, data.start.column, data.end.row, data.end.column));
 
-    var markers = editor.getSession().getMarkers(true);
-    var line_count = 0;
-    var isNewLine = editor.getSession().getDocument().isNewLine;
+    let markers = editor.getSession().getMarkers(true);
+    let line_count = 0;
+    let isNewLine = editor.getSession().getDocument().isNewLine;
 
     if(action == "insert"){
         if(isNewLine(newText)){
@@ -124,9 +124,9 @@ function updateMarker(data:AceAjax.EditorChangeEvent){
 
     if(line_count != 0){
 
-        var markerUpdate = function(id){
-            var marker = markers[id];
-            var row = data.start.row;
+        let markerUpdate = function(id){
+            let marker = markers[id];
+            let row = data.start.row;
 
             if(line_count > 0){
                 row = +1;
@@ -139,6 +139,7 @@ function updateMarker(data:AceAjax.EditorChangeEvent){
         };
 
         errorMarkers.forEach(markerUpdate);
+        rscMarkers.forEach(markerUpdate);               // RSC
         refMarkers.forEach(markerUpdate);
         (<any>editor).onChangeFrontMarker();
     }
@@ -148,10 +149,10 @@ function updateMarker(data:AceAjax.EditorChangeEvent){
 //sync LanguageService content and ace editor content
 function syncTypeScriptServiceContent(script, data:AceAjax.EditorChangeEvent){
 
-    var action = data.action;
-    var start = aceEditorPosition.getPositionChars(data.start);
-    var end = aceEditorPosition.getPositionChars(data.end);
-    var newText = editor.getSession().getTextRange(new AceRange(data.start.row, data.start.column, data.end.row, data.end.column));
+    let action = data.action;
+    let start = aceEditorPosition.getPositionChars(data.start);
+    let end = aceEditorPosition.getPositionChars(data.end);
+    let newText = editor.getSession().getTextRange(new AceRange(data.start.row, data.start.column, data.end.row, data.end.column));
     if(action == "insert"){
         editLanguageService(script, start,start,newText);
     }else if (action == "remove") {
@@ -178,29 +179,29 @@ function onChangeCursor(e){
 };
 
 function languageServiceIndent(){
-    var cursor = editor.getCursorPosition();
-    var lineNumber = cursor.row;
+    let cursor = editor.getCursorPosition();
+    let lineNumber = cursor.row;
 
-    var text  = editor.session.getLine(lineNumber);
-    var matches = text.match(/^[\t ]*/);
-    var preIndent = 0;
-    var wordLen = 0;
+    let text  = editor.session.getLine(lineNumber);
+    let matches = text.match(/^[\t ]*/);
+    let preIndent = 0;
+    let wordLen = 0;
 
     if(matches){
         wordLen = matches[0].length;
-        for(var i = 0; i < matches[0].length; i++){
-            var elm = matches[0].charAt(i);
-            var spaceLen = (elm == " ") ? 1: editor.session.getTabSize();
+        for(let i = 0; i < matches[0].length; i++){
+            let elm = matches[0].charAt(i);
+            let spaceLen = (elm == " ") ? 1: editor.session.getTabSize();
             preIndent += spaceLen;
         };
     }
 
-    var smartIndent = tsProject.languageService.getIndentationAtPosition(selectFileName, lineNumber, defaultFormatCodeOptions());
+    let smartIndent = tsProject.languageService.getIndentationAtPosition(selectFileName, lineNumber, defaultFormatCodeOptions());
 
     if(preIndent > smartIndent){
         editor.indent();
     }else{
-        var indent = smartIndent - preIndent;
+        let indent = smartIndent - preIndent;
 
         if(indent > 0){
             editor.getSelection().moveCursorLineStart();
@@ -218,19 +219,19 @@ function languageServiceIndent(){
 }
 
 function refactor(){
-    var references = tsProject.languageService.getOccurrencesAtPosition(selectFileName, aceEditorPosition.getCurrentCharPosition());
+    let references = tsProject.languageService.getOccurrencesAtPosition(selectFileName, aceEditorPosition.getCurrentCharPosition());
 
     references.forEach(function(ref){
-        var getpos = aceEditorPosition.getAcePositionFromChars;
-        var start = getpos(ref.textSpan.start);
-        var end = getpos(ref.textSpan.start + ref.textSpan.length);
-        var range = new AceRange(start.row, start.column, end.row, end.column);
+        let getpos = aceEditorPosition.getAcePositionFromChars;
+        let start = getpos(ref.textSpan.start);
+        let end = getpos(ref.textSpan.start + ref.textSpan.length);
+        let range = new AceRange(start.row, start.column, end.row, end.column);
         editor.selection.addRange(range);
     });
 }
 
 function showOccurrences(){
-    var session = editor.getSession();
+    let session = editor.getSession();
     refMarkers.forEach(function (id){
         session.removeMarker(id);
     });
@@ -243,15 +244,15 @@ function showOccurrences(){
     references.forEach(function(ref){
         //TODO check script name
         // console.log(ref.unitIndex);
-        var getpos = aceEditorPosition.getAcePositionFromChars;
-        var start = getpos(ref.textSpan.start);
-        var end = getpos(ref.textSpan.start + ref.textSpan.length);
-        var range = new AceRange(start.row, start.column, end.row, end.column);
+        let getpos = aceEditorPosition.getAcePositionFromChars;
+        let start = getpos(ref.textSpan.start);
+        let end = getpos(ref.textSpan.start + ref.textSpan.length);
+        let range = new AceRange(start.row, start.column, end.row, end.column);
         refMarkers.push(session.addMarker(range, "typescript-ref", "text", true));
     });
 }
 
-var deferredShowOccurrences = deferredCall(showOccurrences);
+let deferredShowOccurrences = deferredCall(showOccurrences);
 
 /** Keeps running the func till worker is present */
 function workerOnCreate(func, timeout){
@@ -273,7 +274,7 @@ $(function(){
     // outputEditor = ace.edit("output");
     // outputEditor.setTheme("ace/theme/monokai");
     // outputEditor.getSession().setMode('ace/mode/javascript');
-    document.getElementById('editor').style.fontSize='14px';
+    document.getElementById('editor').style.fontSize='16px';
     // document.getElementById('output').style.fontSize='14px';
 
     loadLibFiles();
@@ -311,15 +312,15 @@ $(function(){
     autoComplete = new AutoComplete(editor, selectFileName, new CompletionService(editor));
 
     // override editor onTextInput
-    var originalTextInput = editor.onTextInput;
+    let originalTextInput = editor.onTextInput;
     editor.onTextInput = function (text){
         originalTextInput.call(editor, text);
         if(text == "."){
             editor.execCommand("autoComplete");
 
         }else if (editor.getSession().getDocument().isNewLine(text)) {
-            var lineNumber = editor.getCursorPosition().row;
-            var indent = tsProject.languageService.getIndentationAtPosition(selectFileName, lineNumber, defaultFormatCodeOptions());
+            let lineNumber = editor.getCursorPosition().row;
+            let indent = tsProject.languageService.getIndentationAtPosition(selectFileName, lineNumber, defaultFormatCodeOptions());
             if(indent > 0) {
                 editor.commands.exec("inserttext", editor, {text:" ", times:indent});
             }
@@ -337,15 +338,14 @@ $(function(){
     // });
 
     editor.getSession().on("compileErrors", function(e){
-        var session = editor.getSession();
-        errorMarkers.forEach(function (id){
-            session.removeMarker(id);
-        });
-        e.data.forEach(function(error){
-            var getpos = aceEditorPosition.getAcePositionFromChars;
-            var start = getpos(error.minChar);
-            var end = getpos(error.limChar);
-            var range = new AceRange(start.row, start.column, end.row, end.column);
+        let session = editor.getSession();
+        errorMarkers.forEach(session.removeMarker);
+        rscMarkers.forEach(session.removeMarker);
+        e.data.forEach(error => {
+            let getpos = aceEditorPosition.getAcePositionFromChars;
+            let start = getpos(error.minChar);
+            let end = getpos(error.limChar);
+            let range = new AceRange(start.row, start.column, end.row, end.column);
             errorMarkers.push(session.addMarker(range, "typescript-error", "text", true));
         });
     });
@@ -356,9 +356,12 @@ $(function(){
     // });
 
     $("#select-sample").change(function(e){
-        var path = "samples/" + $(this).val();
+        let path = "samples/" + $(this).val();
         loadFile(path);
     });
+
+
+    editor.getSession().on("verify", e => {});
 
 });
 
@@ -371,20 +374,20 @@ function getServerURL() {
 
 (function() {
     // Get the test list
-    var xhr = new XMLHttpRequest();
+    let xhr = new XMLHttpRequest();
     xhr.open('GET', getServerURL() + '/files', true);
     xhr.send();
     xhr.addEventListener('readystatechange', function (e) {
        if (xhr.readyState == 4 && xhr.status == 200) {        
             // For some reason we have to do `JSON.parse` twice
-            var tests = JSON.parse(JSON.parse(xhr.responseText));
-            var data = {
+            let tests = JSON.parse(JSON.parse(xhr.responseText));
+            let data = {
                 name: 'Test Directory',
                 children: tests
             };
 
             // boot up the demo
-            var demo = new Vue({
+            let demo = new Vue({
                 el: '#demo',
                 data: {
                     treeData: data
@@ -418,8 +421,8 @@ Vue.component('item', {
                 this.open = !this.open
             } else {
                 // Compute the file path
-                var chain: any = [];
-                var u = this;
+                let chain: any = [];
+                let u = this;
                 while (u) {
                     if (u.model && u.model.name) {
                         chain.push(u.model.name);
@@ -430,13 +433,13 @@ Vue.component('item', {
                 chain = chain.slice(1).join('/');
 
                 // Request file from server
-                var xhr = new XMLHttpRequest();
+                let xhr = new XMLHttpRequest();
                 xhr.open('POST', '/load-test', true);
                 xhr.setRequestHeader("Content-type", "application/json");
                 xhr.send(JSON.stringify({ 'name': chain }));
                 xhr.addEventListener('readystatechange', function (e) {
                    if (xhr.readyState == 4 && xhr.status == 200) {
-                        var fileText = '// file: ' + chain + '\n' + xhr.responseText;
+                        let fileText = '// file: ' + chain + '\n' + xhr.responseText;
                         editor.setValue(fileText);
                     }
                 });
@@ -459,41 +462,62 @@ Vue.component('item', {
 
 
 document.getElementById("verify").onclick = function () {
-    var text = editor.getValue();
-    var data = JSON.stringify({ action: 2, program: text });
+    let text = editor.getValue();
+    // console.log(text)
+    let data = JSON.stringify({ action: 2, program: text });
 
-    var xhr = new XMLHttpRequest();
+    let xhr = new XMLHttpRequest();
     xhr.open('POST', '/verify', true);
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.send(data);
     xhr.addEventListener('readystatechange', function (e) {
         if (xhr.readyState == 4 && xhr.status == 200) {
-            var response = xhr.responseText;
+            let response = xhr.responseText;            
             try {
-                var responseJSON = JSON.parse(response);
-                var errs = _.flatten(responseJSON);
-                var isSafe = errs.length === 0;
+                let responseJSON = JSON.parse(response);
+                
+                let errs = _.flatten(responseJSON);
+                let isSafe = errs.length === 0;
 
                 if (isSafe) {
                     // safeButton();
                     console.log('SAFE');
                 } else {
                     // unsafeButton();
-                    console.log('UNSAFE')
-                    // unsafeButton();
-                    var startPos = { ch: 1, line: 2 }
-                    var stopPos = { ch: 10, line: 2 }
-
-                    // editor.getDoc().markText(startPos, stopPos, { readOnly: true });
-
+                    console.log(errs);                    
+                    
+                    let session = editor.getSession();
+                    errorMarkers.forEach(session.removeMarker);
+                    rscMarkers.forEach(session.removeMarker);     
+                    
+                    
+                    errs.forEach(error => {
+                        
+                        let getpos = aceEditorPosition.getAcePositionFromChars;
+                        let startRow = error.errLoc.sp_start[1] - 1;
+                        let startCol = error.errLoc.sp_start[2] - 1;
+                        let endRow   = error.errLoc.sp_stop[1] - 1;
+                        let endCol   = error.errLoc.sp_stop[2] - 1;
+                        let range = new AceRange(startRow, startCol, endRow, endCol);
+                        
+                        // editor.session.clearAnnotations();
+                        console.log(error, range)
+                        rscMarkers.push(editor.session.addMarker(range, "refscript-error", "text", true)); 
+                              
+                        // editor.session.setAnnotations([{ 
+                        //             row: 1, 
+                        //             column: 2, 
+                        //             text: "Strange error", 
+                        //             type: "info" 
+                        //             }]); 
+               
+                    });
                 }
-
             } catch(e) {
                 // oops...
                 console.log("Error while parsing output of rsc:");
                 console.log(e);
             }
-
         }
     });
 

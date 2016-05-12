@@ -350,35 +350,33 @@ define(["require", "exports", "./utils", 'ace/ace', 'ace/range', './AutoComplete
         }
     });
     document.getElementById("verify").onclick = function () {
-        var text = cm.getValue();
+        var text = editor.getValue();
         var data = JSON.stringify({ action: 2, program: text });
-        WinJS.xhr({
-            type: "POST",
-            headers: { "Content-type": "application/json" },
-            url: "/verify",
-            data: data
-        }).then(function (xhr) {
-            var response = xhr.responseText;
-            try {
-                var responseJSON = JSON.parse(response);
-                var errs = _.flatten(responseJSON);
-                var isSafe = errs.length === 0;
-                if (isSafe) {
-                    console.log('SAFE');
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/verify', true);
+        xhr.setRequestHeader("Content-type", "application/json");
+        xhr.send(data);
+        xhr.addEventListener('readystatechange', function (e) {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                var response = xhr.responseText;
+                try {
+                    var responseJSON = JSON.parse(response);
+                    var errs = _.flatten(responseJSON);
+                    var isSafe = errs.length === 0;
+                    if (isSafe) {
+                        console.log('SAFE');
+                    }
+                    else {
+                        console.log('UNSAFE');
+                        var startPos = { ch: 1, line: 2 };
+                        var stopPos = { ch: 10, line: 2 };
+                    }
                 }
-                else {
-                    console.log('UNSAFE');
-                    var startPos = { ch: 1, line: 2 };
-                    var stopPos = { ch: 10, line: 2 };
-                    cm.getDoc().markText(startPos, stopPos, { readOnly: true });
+                catch (e) {
+                    console.log("Error while parsing output of rsc:");
+                    console.log(e);
                 }
             }
-            catch (e) {
-                console.log("Error while parsing output of rsc:");
-                console.log(e);
-            }
-        }, function (e) {
-            console.log("ERROR");
         });
     };
 });

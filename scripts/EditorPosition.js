@@ -1,4 +1,5 @@
 define(["require", "exports"], function (require, exports) {
+    "use strict";
     var EditorPosition = (function () {
         function EditorPosition(editor) {
             var _this = this;
@@ -81,6 +82,6 @@ define(["require", "exports"], function (require, exports) {
             };
         };
         return EditorPosition;
-    })();
+    }());
     exports.EditorPosition = EditorPosition;
 });

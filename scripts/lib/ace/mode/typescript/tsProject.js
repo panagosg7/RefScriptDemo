@@ -1,4 +1,5 @@
 define(["require", "exports", "./languageServiceHost"], function (require, exports, languageServiceHost_1) {
+    "use strict";
     if (typeof importScripts !== 'undefined') {
         importScripts('../mode/typescript/typescriptServices.js');
     }
@@ -8,7 +9,7 @@ define(["require", "exports", "./languageServiceHost"], function (require, expor
             this.languageService = ts.createLanguageService(this.languageServiceHost, ts.createDocumentRegistry());
         }
         return TsProject;
-    })();
+    }());
     var tsProject = null;
     function getTSProject() {
         return tsProject ? tsProject : tsProject = new TsProject();

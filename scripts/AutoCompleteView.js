@@ -1,4 +1,5 @@
 define(["require", "exports"], function (require, exports) {
+    "use strict";
     var AutoCompleteView = (function () {
         function AutoCompleteView(editor, autoComplete) {
             this.editor = editor;
@@ -99,6 +100,6 @@ define(["require", "exports"], function (require, exports) {
         };
         ;
         return AutoCompleteView;
-    })();
+    }());
     exports.AutoCompleteView = AutoCompleteView;
 });

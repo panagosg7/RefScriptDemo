@@ -1,4 +1,5 @@
 define(["require", "exports", "./utils", 'ace/ace', 'ace/range', './AutoComplete', 'EditorPosition', './CompletionService', "ace/lib/lang", "./lib/ace/mode/typescript/tsProject"], function (require, exports, utils_1, ace, range_1, AutoComplete_1, EditorPosition_1, CompletionService_1, lang_1, tsProject_1) {
+    "use strict";
     function defaultFormatCodeOptions() {
         return {
             IndentSize: 4,

@@ -1,4 +1,5 @@
 define(["require", "exports"], function (require, exports) {
+    "use strict";
     function javascriptRun(js) {
         var external = window.open();
         var script = external.window.document.createElement("script");

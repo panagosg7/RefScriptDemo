@@ -1,4 +1,5 @@
 define(["require", "exports", './EditorPosition', "./lib/ace/mode/typescript/tsProject"], function (require, exports, EditorPosition_1, tsProject_1) {
+    "use strict";
     var tsProject = tsProject_1.getTSProject();
     var CompletionService = (function () {
         function CompletionService(editor) {
@@ -33,6 +34,6 @@ define(["require", "exports", './EditorPosition', "./lib/ace/mode/typescript/tsP
         };
         ;
         return CompletionService;
-    })();
+    }());
     exports.CompletionService = CompletionService;
 });

@@ -1,5 +1,5 @@
-'use strict';
 define(["require", "exports"], function (require, exports) {
+    'use strict';
     function clone(target) {
         return assign(Array.isArray(target) ? [] : {}, target);
     }

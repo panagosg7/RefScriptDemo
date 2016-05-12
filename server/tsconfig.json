@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "module": "commonjs",
+        "noImplicitAny": true,        
+        "removeComments": true,
+        "noLib": false,
+        "preserveConstEnums": false,
+        "suppressImplicitAnyIndexErrors": false,
+        "strictNullChecks": true, 
+        "watch": true       
+    },    
+    "exclude": [
+        "local-typings",
+        "typings/browser",
+        "typings/browser.d.ts"        
+    ]
+}

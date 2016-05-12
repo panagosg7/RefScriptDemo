@@ -1,4 +1,5 @@
 define(["require", "exports"], function (require, exports) {
+    "use strict";
     var DocumentPositionUtil;
     (function (DocumentPositionUtil) {
         DocumentPositionUtil.getLinesChars = function (lines) {

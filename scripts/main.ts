@@ -8,6 +8,10 @@ import {EditorPosition} from 'EditorPosition';
 import {CompletionService} from './CompletionService';
 import {deferredCall} from "ace/lib/lang";
 
+import _ = require('underscore');
+import Vue = require('vue');
+
+
 export function defaultFormatCodeOptions(): ts.FormatCodeOptions {
     return {
         IndentSize: 4,
@@ -41,11 +45,11 @@ var errorMarkers =[];
 import {getTSProject} from "./lib/ace/mode/typescript/tsProject";
 var tsProject = getTSProject();
 
-function loadLibFiles(){    
+function loadLibFiles(){
 
     var libFiles = ["typescripts/lib.d.ts"];
-    
-    // Load files here 
+
+    // Load files here
     libFiles.forEach(function(libname){
         readFile(libname, function(content){
             tsProject.languageServiceHost.addScript(libname, content);
@@ -97,13 +101,13 @@ function onUpdateDocument(e: AceAjax.EditorChangeEvent) {
 }
 
 // TODO check column
-function updateMarker(data:AceAjax.EditorChangeEvent){    
+function updateMarker(data:AceAjax.EditorChangeEvent){
     var action = data.action;
     var action = data.action;
     var start = aceEditorPosition.getPositionChars(data.start);
     var end = aceEditorPosition.getPositionChars(data.end);
     var newText = editor.getSession().getTextRange(new AceRange(data.start.row, data.start.column, data.end.row, data.end.column));
-    
+
     var markers = editor.getSession().getMarkers(true);
     var line_count = 0;
     var isNewLine = editor.getSession().getDocument().isNewLine;
@@ -117,7 +121,7 @@ function updateMarker(data:AceAjax.EditorChangeEvent){
             line_count = -1;
         }
     }
-    
+
     if(line_count != 0){
 
         var markerUpdate = function(id){
@@ -150,7 +154,7 @@ function syncTypeScriptServiceContent(script, data:AceAjax.EditorChangeEvent){
     var newText = editor.getSession().getTextRange(new AceRange(data.start.row, data.start.column, data.end.row, data.end.column));
     if(action == "insert"){
         editLanguageService(script, start,start,newText);
-    }else if (action == "remove") {        
+    }else if (action == "remove") {
         editLanguageService(script, start,end,"");
     }
     else{
@@ -230,7 +234,7 @@ function showOccurrences(){
     refMarkers.forEach(function (id){
         session.removeMarker(id);
     });
-    
+
     let references = tsProject.languageService.getOccurrencesAtPosition(selectFileName, aceEditorPosition.getCurrentCharPosition());
     if(!references){
         // none found. This is a valid response
@@ -314,7 +318,7 @@ $(function(){
             editor.execCommand("autoComplete");
 
         }else if (editor.getSession().getDocument().isNewLine(text)) {
-            var lineNumber = editor.getCursorPosition().row;            
+            var lineNumber = editor.getCursorPosition().row;
             var indent = tsProject.languageService.getIndentationAtPosition(selectFileName, lineNumber, defaultFormatCodeOptions());
             if(indent > 0) {
                 editor.commands.exec("inserttext", editor, {text:" ", times:indent});
@@ -344,8 +348,8 @@ $(function(){
             var range = new AceRange(start.row, start.column, end.row, end.column);
             errorMarkers.push(session.addMarker(range, "typescript-error", "text", true));
         });
-    });    
-    
+    });
+
 
     // $("#javascript-run").click(function(e){
     //     javascriptRun(outputEditor.getSession().doc.getValue());
@@ -358,4 +362,143 @@ $(function(){
 
 });
 
-console.log('Reached here')
+
+/* VUE */
+
+function getServerURL() {
+    return window.location.protocol + "//" + window.location.host;
+}
+
+(function() {
+    // Get the test list
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', getServerURL() + '/files', true);
+    xhr.send();
+    xhr.addEventListener('readystatechange', function (e) {
+       if (xhr.readyState == 4 && xhr.status == 200) {        
+            // For some reason we have to do `JSON.parse` twice
+            var tests = JSON.parse(JSON.parse(xhr.responseText));
+            var data = {
+                name: 'Test Directory',
+                children: tests
+            };
+
+            // boot up the demo
+            var demo = new Vue({
+                el: '#demo',
+                data: {
+                    treeData: data
+                }
+            });
+        }
+
+    });
+})();
+
+
+// define the item component
+Vue.component('item', {
+    template: '#item-template',
+    props: {
+        model: Object
+    },
+    data: function () {
+        return {
+            open: false
+        }
+    },
+    computed: {
+        isFolder: function () {
+            return this.model.children && this.model.children.length;
+        }
+    },
+    methods: {
+        toggle: function () {
+            if (this.isFolder) {
+                this.open = !this.open
+            } else {
+                // Compute the file path
+                var chain: any = [];
+                var u = this;
+                while (u) {
+                    if (u.model && u.model.name) {
+                        chain.push(u.model.name);
+                    }
+                    u = u.$parent;
+                }
+                chain.reverse();
+                chain = chain.slice(1).join('/');
+
+                // Request file from server
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', '/load-test', true);
+                xhr.setRequestHeader("Content-type", "application/json");
+                xhr.send(JSON.stringify({ 'name': chain }));
+                xhr.addEventListener('readystatechange', function (e) {
+                   if (xhr.readyState == 4 && xhr.status == 200) {
+                        var fileText = '// file: ' + chain + '\n' + xhr.responseText;
+                        editor.setValue(fileText);
+                    }
+                });
+            }
+        },
+        changeType: function () {
+            // if (!this.isFolder) {
+            //     Vue.set(this.model, 'children', [])
+            //     this.addChild()
+            //     this.open = true
+            // }
+        },
+        // addChild: function () {
+        //     this.model.children.push({
+        //         name: 'new stuff'
+        //     })
+        // }
+    }
+});
+
+
+document.getElementById("verify").onclick = function () {
+    var text = cm.getValue();
+    var data = JSON.stringify({ action: 2, program: text });
+
+    WinJS.xhr({
+        type: "POST",
+        headers: { "Content-type": "application/json" },    // XXX: Required to be parsed as JSON from ExpressJS
+        url: "/verify",
+        data: data
+    }).then(function (xhr) {
+        var response = xhr.responseText;
+
+        try {
+            var responseJSON = JSON.parse(response);
+            var errs = _.flatten(responseJSON);
+            var isSafe = errs.length === 0;
+
+            if (isSafe) {
+                // safeButton();
+                console.log('SAFE');
+            } else {
+                // unsafeButton();
+                console.log('UNSAFE')
+                // unsafeButton();
+                var startPos = { ch: 1, line: 2 }
+                var stopPos = { ch: 10, line: 2 }
+
+                cm.getDoc().markText(startPos, stopPos, { readOnly: true });
+
+
+            }
+
+        } catch(e) {
+            // oops...
+            console.log("Error while parsing output of rsc:");
+            console.log(e);
+        }
+
+    }, function (e) {
+        console.log("ERROR");
+        // loadInitialText(false, true, true);
+    });
+
+};

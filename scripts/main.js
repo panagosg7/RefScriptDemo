@@ -1,4 +1,4 @@
-define(["require", "exports", "./utils", 'ace/ace', 'ace/range', './AutoComplete', 'EditorPosition', './CompletionService', "ace/lib/lang", "./lib/ace/mode/typescript/tsProject"], function (require, exports, utils_1, ace, range_1, AutoComplete_1, EditorPosition_1, CompletionService_1, lang_1, tsProject_1) {
+define(["require", "exports", "./utils", 'ace/ace', 'ace/range', './AutoComplete', 'EditorPosition', './CompletionService', "ace/lib/lang", 'underscore', 'vue', "./lib/ace/mode/typescript/tsProject"], function (require, exports, utils_1, ace, range_1, AutoComplete_1, EditorPosition_1, CompletionService_1, lang_1, _, Vue, tsProject_1) {
     "use strict";
     function defaultFormatCodeOptions() {
         return {
@@ -279,5 +279,106 @@ define(["require", "exports", "./utils", 'ace/ace', 'ace/range', './AutoComplete
             loadFile(path);
         });
     });
-    console.log('Reached here');
+    function getServerURL() {
+        return window.location.protocol + "//" + window.location.host;
+    }
+    (function () {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', getServerURL() + '/files', true);
+        xhr.send();
+        xhr.addEventListener('readystatechange', function (e) {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                var tests = JSON.parse(JSON.parse(xhr.responseText));
+                var data = {
+                    name: 'Test Directory',
+                    children: tests
+                };
+                var demo = new Vue({
+                    el: '#demo',
+                    data: {
+                        treeData: data
+                    }
+                });
+            }
+        });
+    })();
+    Vue.component('item', {
+        template: '#item-template',
+        props: {
+            model: Object
+        },
+        data: function () {
+            return {
+                open: false
+            };
+        },
+        computed: {
+            isFolder: function () {
+                return this.model.children && this.model.children.length;
+            }
+        },
+        methods: {
+            toggle: function () {
+                if (this.isFolder) {
+                    this.open = !this.open;
+                }
+                else {
+                    var chain = [];
+                    var u = this;
+                    while (u) {
+                        if (u.model && u.model.name) {
+                            chain.push(u.model.name);
+                        }
+                        u = u.$parent;
+                    }
+                    chain.reverse();
+                    chain = chain.slice(1).join('/');
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('POST', '/load-test', true);
+                    xhr.setRequestHeader("Content-type", "application/json");
+                    xhr.send(JSON.stringify({ 'name': chain }));
+                    xhr.addEventListener('readystatechange', function (e) {
+                        if (xhr.readyState == 4 && xhr.status == 200) {
+                            var fileText = '// file: ' + chain + '\n' + xhr.responseText;
+                            editor.setValue(fileText);
+                        }
+                    });
+                }
+            },
+            changeType: function () {
+            },
+        }
+    });
+    document.getElementById("verify").onclick = function () {
+        var text = cm.getValue();
+        var data = JSON.stringify({ action: 2, program: text });
+        WinJS.xhr({
+            type: "POST",
+            headers: { "Content-type": "application/json" },
+            url: "/verify",
+            data: data
+        }).then(function (xhr) {
+            var response = xhr.responseText;
+            try {
+                var responseJSON = JSON.parse(response);
+                var errs = _.flatten(responseJSON);
+                var isSafe = errs.length === 0;
+                if (isSafe) {
+                    console.log('SAFE');
+                }
+                else {
+                    console.log('UNSAFE');
+                    var startPos = { ch: 1, line: 2 };
+                    var stopPos = { ch: 10, line: 2 };
+                    cm.getDoc().markText(startPos, stopPos, { readOnly: true });
+                }
+            }
+            catch (e) {
+                console.log("Error while parsing output of rsc:");
+                console.log(e);
+            }
+        }, function (e) {
+            console.log("ERROR");
+        });
+    };
 });

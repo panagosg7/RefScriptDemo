@@ -27,7 +27,7 @@ http://basarat.github.io/TypeScriptEditor/
     tsc
     cd ..
 
-#### Build RefScript
+#### RefScript
     cd refscript
     stack build --fast
 

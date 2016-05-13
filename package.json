@@ -25,6 +25,8 @@
     "body-parser": "^1.15.1",
     "cookie-parser": "^1.4.1",
     "gulp-git": "^1.7.1",
+    "gulp-nodemon": "^2.0.7",
+    "gulp-typescript": "^2.13.4",
     "morgan": "^1.7.0",
     "underscore": "^1.8.3"
   }

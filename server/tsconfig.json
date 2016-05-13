@@ -7,7 +7,7 @@
         "noLib": false,
         "preserveConstEnums": false,
         "suppressImplicitAnyIndexErrors": false,
-        "watch": true       
+        "watch": false
     },    
     "exclude": [
         "local-typings",

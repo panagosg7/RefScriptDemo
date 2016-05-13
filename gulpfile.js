@@ -12,23 +12,25 @@ var git         = require('gulp-git');
 
 // Get server typings
 gulp.task("server-typings", function () {
-    var stream = gulp.src("./server/typings.json")
+    var stream = gulp.src("server/typings.json")
         .pipe(gulpTypings())        
-        .pipe(gulp.dest('server')); 
+        .pipe(gulp.dest('.')); 
     return stream; // by returning stream gulp can listen to events from the stream and knows when it is finished.
 });
 
 // compile server
 var tsProject = ts.createProject('server/tsconfig.json');
-gulp.task('server-scripts', ['server-typings'], function() {    
+gulp.task('server-scripts', ['server-typings'], function() {
+    process.chdir('server');    
     var tsResult = tsProject.src()
         .pipe(ts(tsProject));
-    return tsResult.js.pipe(gulp.dest('server'));
+    return tsResult.js.pipe(gulp.dest('.'));
 });
 
 // Incrementally compile server
-gulp.task('watch-server', ['server-scripts'], function() {
-    gulp.watch('server/*.ts', ['server-scripts']);
+gulp.task('watch-server', ['server-typings', 'server-scripts'], function() {
+    process.chdir('server');        
+    gulp.watch('*.ts', ['server-scripts']);
 });
 
 // RefScript

@@ -28,8 +28,10 @@ http://basarat.github.io/TypeScriptEditor/
     cd ..
 
 #### RefScript
+
     cd refscript
     stack build --fast
+    cd ..
 
 
 #### Client
@@ -37,6 +39,7 @@ http://basarat.github.io/TypeScriptEditor/
     cd client
     typings install
     tsc
+    cd ..
 
 
 ### Start server

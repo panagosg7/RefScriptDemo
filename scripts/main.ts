@@ -243,8 +243,6 @@ function showOccurrences() {
         return;
     }
     references.forEach(function (ref) {
-        //TODO check script name
-        // console.log(ref.unitIndex);
         let getpos = aceEditorPosition.getAcePositionFromChars;
         let start = getpos(ref.textSpan.start);
         let end = getpos(ref.textSpan.start + ref.textSpan.length);
@@ -392,7 +390,6 @@ function getServerURL() {
         if (xhr.readyState == 4 && xhr.status == 200) {
             // For some reason we have to do `JSON.parse` twice
             let tests = JSON.parse(JSON.parse(xhr.responseText));
-            console.log(tests)
             let data = {
                 name: 'Test Directory',
                 children: tests

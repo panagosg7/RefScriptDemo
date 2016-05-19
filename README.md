@@ -29,6 +29,7 @@ http://basarat.github.io/TypeScriptEditor/
 
 #### RefScript
 
+    git submodule update --init --recursive
     cd refscript
     stack build --fast
     cd ..

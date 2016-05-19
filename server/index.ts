@@ -6,11 +6,9 @@ import * as logger        from 'morgan';
 import * as cookieParser  from 'cookie-parser';
 import * as bodyParser    from 'body-parser';
 import * as routes        from './routes';
+// import * as http          from 'http';
 
 let app = express();
-
-// let httpServer = http.createServer(app);
-
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
@@ -51,3 +49,4 @@ app.use(handle500);
 app.listen(serverPort, () => {
     console.log('Express START: http://localhost:', serverPort, 'press Ctrl-C to kill.');
 });
+

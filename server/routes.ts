@@ -5,6 +5,7 @@ import * as child_process   from 'child_process';
 import * as fs              from 'fs';
 import * as glob            from 'glob';
 import * as _               from 'underscore';
+import * as fs              from 'fs';
 
 let exec = child_process.exec;
 
@@ -16,12 +17,14 @@ const refscriptBaseDir = path.join(__dirname       , '/../refscript');
 const refscriptTestDir = path.join(refscriptBaseDir, '/tests');    
 const refscriptBin     = path.join(refscriptBaseDir, '/.stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/rsc/rsc');
 
-
-
 export function verify(req: express.Request, res: express.Response) {
 
     // Generate temporary filenames
-    let vardir = "/var/tmp";
+    let vardir = path.resolve('./tmp');
+    if (!fs.existsSync(vardir)){
+        fs.mkdirSync(vardir);
+    }
+    
     let time = new Date().getTime().toString();
     let tsrc = path.join(vardir, time + '.ts');
     let logfile = path.join(vardir, time + '.log');

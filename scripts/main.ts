@@ -561,6 +561,7 @@ document.getElementById("verify").onclick = function () {
                     removeAllMarkers(session);
                     toastr.clear();
                     toastr.error('There were errors found:(') //.css("width","600px")
+                    console.log(errs);
 
                     errs.forEach(error => {
                         let getpos = aceEditorPosition.getAcePositionFromChars;

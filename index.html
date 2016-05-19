@@ -7,6 +7,8 @@
     <!-- Bootstrap -->
     <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="/bower_components/bootswatch/flatly/bootstrap.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.css">
+
 
     <link type="text/css" rel="stylesheet" href="stylesheets/style.css" />
     <link type="text/css" rel="stylesheet" href="stylesheets/vue.css" />
@@ -36,8 +38,7 @@
                     <li>
                         <div
                         :class="{bold: isFolder}"
-                        @click="toggle"
-                        @dblclick="changeType">
+                        @click="toggle">
                         {{model.name}}
                         <span v-if="isFolder">[{{open ? '-' : '+'}}]</span>
                         </div>
@@ -84,6 +85,9 @@
       };
   </script>
   <script type="text/javascript" src="./scripts/lib/jquery.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.js"></script>
+  <script type="text/javascript" src="http://spin.js.org/spin.min.js"></script>
+
   <script type="text/javascript" src="./scripts/lib/ace/mode/typescript/typescriptServices.js"></script>
   <script src="./scripts/lib/require.js" data-main="main" type="text/javascript"></script>
 

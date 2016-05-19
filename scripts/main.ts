@@ -1,4 +1,4 @@
-import {javascriptRun,readFile} from "./utils";
+import {javascriptRun, readFile} from "./utils";
 
 import ace = require('ace/ace');
 import {Range as AceRange} from 'ace/range';
@@ -10,6 +10,7 @@ import {deferredCall} from "ace/lib/lang";
 
 import _ = require('underscore');
 import Vue = require('vue');
+
 
 
 export function defaultFormatCodeOptions(): ts.FormatCodeOptions {
@@ -30,7 +31,7 @@ export function defaultFormatCodeOptions(): ts.FormatCodeOptions {
 }
 
 let aceEditorPosition = null;
-let editor:AceAjax.Editor = null;
+let editor: AceAjax.Editor = null;
 // let outputEditor:AceAjax.Editor = null;
 let docUpdateCount = 0;
 
@@ -46,38 +47,38 @@ let rscMarkers = [];
 import {getTSProject} from "./lib/ace/mode/typescript/tsProject";
 let tsProject = getTSProject();
 
-function loadLibFiles(){
+function loadLibFiles() {
 
     let libFiles = ["typescripts/lib.d.ts"];
 
     // Load files here
-    libFiles.forEach(function(libname){
-        readFile(libname, function(content){
+    libFiles.forEach(function (libname) {
+        readFile(libname, function (content) {
             tsProject.languageServiceHost.addScript(libname, content);
         });
     });
 
     // Load files in the worker
-    workerOnCreate(function(){//TODO use worker init event
-        libFiles.forEach(function(libname){
-            readFile(libname, function(content){
+    workerOnCreate(function () {//TODO use worker init event
+        libFiles.forEach(function (libname) {
+            readFile(libname, function (content) {
                 let params = {
                     data: {
-                        name:libname,
-                        content:content
+                        name: libname,
+                        content: content
                     }
                 };
-                editor.getSession().$worker.emit("addLibrary", params );
+                editor.getSession().$worker.emit("addLibrary", params);
             });
         });
     }, 100);
 }
 
 function loadFile(filename) {
-    readFile(filename, function(content){
+    readFile(filename, function (content) {
         selectFileName = filename;
         syncStop = true;
-        let data = content.replace(/\r\n?/g,"\n");
+        let data = content.replace(/\r\n?/g, "\n");
         editor.setValue(data);
         editor.moveCursorTo(0, 0);
         tsProject.languageServiceHost.addScript(filename, editor.getSession().getDocument().getValue());
@@ -85,8 +86,8 @@ function loadFile(filename) {
     });
 }
 
-function startAutoComplete(editor){
-    if (autoComplete.isActive() == false){
+function startAutoComplete(editor) {
+    if (autoComplete.isActive() == false) {
         autoComplete.setScriptName(selectFileName);
         autoComplete.active();
     }
@@ -102,7 +103,7 @@ function onUpdateDocument(e: AceAjax.EditorChangeEvent) {
 }
 
 // TODO check column
-function updateMarker(data:AceAjax.EditorChangeEvent){
+function updateMarker(data: AceAjax.EditorChangeEvent) {
     let action = data.action;
     let start = aceEditorPosition.getPositionChars(data.start);
     let end = aceEditorPosition.getPositionChars(data.end);
@@ -112,29 +113,29 @@ function updateMarker(data:AceAjax.EditorChangeEvent){
     let line_count = 0;
     let isNewLine = editor.getSession().getDocument().isNewLine;
 
-    if(action == "insert"){
-        if(isNewLine(newText)){
+    if (action == "insert") {
+        if (isNewLine(newText)) {
             line_count = 1;
         }
-    }else if (action == "remove") {
-        if(isNewLine(newText)){
+    } else if (action == "remove") {
+        if (isNewLine(newText)) {
             line_count = -1;
         }
     }
 
-    if(line_count != 0){
+    if (line_count != 0) {
 
-        let markerUpdate = function(id){
+        let markerUpdate = function (id) {
             let marker = markers[id];
             let row = data.start.row;
 
-            if(line_count > 0){
+            if (line_count > 0) {
                 row = +1;
             }
 
-            if(marker && marker.range.start.row > row ){
-                marker.range.start.row += line_count ;
-                marker.range.end.row += line_count ;
+            if (marker && marker.range.start.row > row) {
+                marker.range.start.row += line_count;
+                marker.range.end.row += line_count;
             }
         };
 
@@ -147,70 +148,70 @@ function updateMarker(data:AceAjax.EditorChangeEvent){
 }
 
 //sync LanguageService content and ace editor content
-function syncTypeScriptServiceContent(script, data:AceAjax.EditorChangeEvent){
+function syncTypeScriptServiceContent(script, data: AceAjax.EditorChangeEvent) {
 
     let action = data.action;
     let start = aceEditorPosition.getPositionChars(data.start);
     let end = aceEditorPosition.getPositionChars(data.end);
     let newText = editor.getSession().getTextRange(new AceRange(data.start.row, data.start.column, data.end.row, data.end.column));
-    if(action == "insert"){
-        editLanguageService(script, start,start,newText);
-    }else if (action == "remove") {
-        editLanguageService(script, start,end,"");
+    if (action == "insert") {
+        editLanguageService(script, start, start, newText);
+    } else if (action == "remove") {
+        editLanguageService(script, start, end, "");
     }
-    else{
-        console.error('unknown action:',action)
+    else {
+        console.error('unknown action:', action)
     }
 };
 
 
-function editLanguageService(name, minChar,limChar,newText){
+function editLanguageService(name, minChar, limChar, newText) {
     tsProject.languageServiceHost.editScript(name, minChar, limChar, newText);
 }
 
-function onChangeCursor(e){
-    if(!syncStop){
-        try{
+function onChangeCursor(e) {
+    if (!syncStop) {
+        try {
             deferredShowOccurrences.schedule(200);
-        }catch (ex){
+        } catch (ex) {
             //TODO
         }
     }
 };
 
-function languageServiceIndent(){
+function languageServiceIndent() {
     let cursor = editor.getCursorPosition();
     let lineNumber = cursor.row;
 
-    let text  = editor.session.getLine(lineNumber);
+    let text = editor.session.getLine(lineNumber);
     let matches = text.match(/^[\t ]*/);
     let preIndent = 0;
     let wordLen = 0;
 
-    if(matches){
+    if (matches) {
         wordLen = matches[0].length;
-        for(let i = 0; i < matches[0].length; i++){
+        for (let i = 0; i < matches[0].length; i++) {
             let elm = matches[0].charAt(i);
-            let spaceLen = (elm == " ") ? 1: editor.session.getTabSize();
+            let spaceLen = (elm == " ") ? 1 : editor.session.getTabSize();
             preIndent += spaceLen;
         };
     }
 
     let smartIndent = tsProject.languageService.getIndentationAtPosition(selectFileName, lineNumber, defaultFormatCodeOptions());
 
-    if(preIndent > smartIndent){
+    if (preIndent > smartIndent) {
         editor.indent();
-    }else{
+    } else {
         let indent = smartIndent - preIndent;
 
-        if(indent > 0){
+        if (indent > 0) {
             editor.getSelection().moveCursorLineStart();
-            editor.commands.exec("inserttext", editor, {text:" ", times:indent});
+            editor.commands.exec("inserttext", editor, { text: " ", times: indent });
         }
 
-        if( cursor.column > wordLen){
+        if (cursor.column > wordLen) {
             cursor.column += indent;
-        }else{
+        } else {
             cursor.column = indent + wordLen;
         }
 
@@ -218,10 +219,10 @@ function languageServiceIndent(){
     }
 }
 
-function refactor(){
+function refactor() {
     let references = tsProject.languageService.getOccurrencesAtPosition(selectFileName, aceEditorPosition.getCurrentCharPosition());
 
-    references.forEach(function(ref){
+    references.forEach(function (ref) {
         let getpos = aceEditorPosition.getAcePositionFromChars;
         let start = getpos(ref.textSpan.start);
         let end = getpos(ref.textSpan.start + ref.textSpan.length);
@@ -230,18 +231,18 @@ function refactor(){
     });
 }
 
-function showOccurrences(){
+function showOccurrences() {
     let session = editor.getSession();
-    refMarkers.forEach(function (id){
+    refMarkers.forEach(function (id) {
         session.removeMarker(id);
     });
 
     let references = tsProject.languageService.getOccurrencesAtPosition(selectFileName, aceEditorPosition.getCurrentCharPosition());
-    if(!references){
+    if (!references) {
         // none found. This is a valid response
         return;
     }
-    references.forEach(function(ref){
+    references.forEach(function (ref) {
         //TODO check script name
         // console.log(ref.unitIndex);
         let getpos = aceEditorPosition.getAcePositionFromChars;
@@ -255,11 +256,11 @@ function showOccurrences(){
 let deferredShowOccurrences = deferredCall(showOccurrences);
 
 /** Keeps running the func till worker is present */
-function workerOnCreate(func, timeout){
-    if(editor.getSession().$worker){
+function workerOnCreate(func, timeout) {
+    if (editor.getSession().$worker) {
         func(editor.getSession().$worker);
-    }else{
-        setTimeout(function(){
+    } else {
+        setTimeout(function () {
             workerOnCreate(func, timeout);
         });
     }
@@ -267,16 +268,16 @@ function workerOnCreate(func, timeout){
 
 
 function removeAllMarkers(session: AceAjax.IEditSession) {
-    _.values(session.getMarkers(true)).forEach(v => { 
-        session.removeMarker(v.id); 
+    _.values(session.getMarkers(true)).forEach(v => {
+        session.removeMarker(v.id);
     });
-    _.values(session.getMarkers(false)).forEach(v => { 
-        session.removeMarker(v.id); 
-    });        
+    _.values(session.getMarkers(false)).forEach(v => {
+        session.removeMarker(v.id);
+    });
 }
 
 
-$(function(){
+$(function () {
     editor = ace.edit("editor");
     // editor.setTheme("ace/theme/monokai");
     editor.getSession().setMode('ace/mode/typescript');
@@ -284,7 +285,7 @@ $(function(){
     // outputEditor = ace.edit("output");
     // outputEditor.setTheme("ace/theme/monokai");
     // outputEditor.getSession().setMode('ace/mode/javascript');
-    document.getElementById('editor').style.fontSize='16px';
+    document.getElementById('editor').style.fontSize = '16px';
     // document.getElementById('output').style.fontSize='14px';
 
     loadLibFiles();
@@ -294,17 +295,17 @@ $(function(){
     editor.addEventListener("changeSelection", onChangeCursor);
 
     editor.commands.addCommands([{
-        name:"autoComplete",
-        bindKey:"Ctrl-Space",
-        exec:function(editor) {
+        name: "autoComplete",
+        bindKey: "Ctrl-Space",
+        exec: function (editor) {
             startAutoComplete(editor);
         }
     }]);
 
     editor.commands.addCommands([{
-        name:"refactor",
+        name: "refactor",
         bindKey: "F2",
-        exec:function(editor) {
+        exec: function (editor) {
             refactor();
         }
     }]);
@@ -312,7 +313,7 @@ $(function(){
     editor.commands.addCommands([{
         name: "indent",
         bindKey: "Tab",
-        exec: function(editor) {
+        exec: function (editor) {
             languageServiceIndent();
         },
         multiSelectAction: "forEach"
@@ -323,22 +324,22 @@ $(function(){
 
     // override editor onTextInput
     let originalTextInput = editor.onTextInput;
-    editor.onTextInput = function (text){
+    editor.onTextInput = function (text) {
         originalTextInput.call(editor, text);
-        if(text == "."){
+        if (text == ".") {
             editor.execCommand("autoComplete");
 
-        }else if (editor.getSession().getDocument().isNewLine(text)) {
+        } else if (editor.getSession().getDocument().isNewLine(text)) {
             let lineNumber = editor.getCursorPosition().row;
             let indent = tsProject.languageService.getIndentationAtPosition(selectFileName, lineNumber, defaultFormatCodeOptions());
-            if(indent > 0) {
-                editor.commands.exec("inserttext", editor, {text:" ", times:indent});
+            if (indent > 0) {
+                editor.commands.exec("inserttext", editor, { text: " ", times: indent });
             }
         }
     };
 
-    editor.addEventListener("mousedown", function(e){
-        if(autoComplete.isActive()){
+    editor.addEventListener("mousedown", function (e) {
+        if (autoComplete.isActive()) {
             autoComplete.deactivate();
         }
     });
@@ -347,10 +348,10 @@ $(function(){
     //     outputEditor.getSession().doc.setValue(e.data);
     // });
 
-    editor.getSession().on("compileErrors", function(e){
+    editor.getSession().on("compileErrors", function (e) {
         let session = editor.getSession();
         removeAllMarkers(session);
-        
+
         e.data.forEach(error => {
             let getpos = aceEditorPosition.getAcePositionFromChars;
             let start = getpos(error.minChar);
@@ -365,13 +366,13 @@ $(function(){
     //     javascriptRun(outputEditor.getSession().doc.getValue());
     // });
 
-    $("#select-sample").change(function(e){
+    $("#select-sample").change(function (e) {
         let path = "samples/" + $(this).val();
         loadFile(path);
     });
 
 
-    editor.getSession().on("verify", e => {});
+    editor.getSession().on("verify", e => { });
 
 });
 
@@ -382,15 +383,16 @@ function getServerURL() {
     return window.location.protocol + "//" + window.location.host;
 }
 
-(function() {
+(function () {
     // Get the test list
     let xhr = new XMLHttpRequest();
     xhr.open('GET', getServerURL() + '/files', true);
     xhr.send();
     xhr.addEventListener('readystatechange', function (e) {
-       if (xhr.readyState == 4 && xhr.status == 200) {        
+        if (xhr.readyState == 4 && xhr.status == 200) {
             // For some reason we have to do `JSON.parse` twice
             let tests = JSON.parse(JSON.parse(xhr.responseText));
+            console.log(tests)
             let data = {
                 name: 'Test Directory',
                 children: tests
@@ -448,29 +450,65 @@ Vue.component('item', {
                 xhr.setRequestHeader("Content-type", "application/json");
                 xhr.send(JSON.stringify({ 'name': chain }));
                 xhr.addEventListener('readystatechange', function (e) {
-                   if (xhr.readyState == 4 && xhr.status == 200) {
+                    if (xhr.readyState == 4 && xhr.status == 200) {
                         let fileText = '// file: ' + chain + '\n' + xhr.responseText;
-                        let session = editor.getSession();                        
+                        let session = editor.getSession();
                         removeAllMarkers(session);
-                        session.setValue(fileText);                        
+                        session.setValue(fileText);
                     }
                 });
             }
-        },
-        changeType: function () {
-            // if (!this.isFolder) {
-            //     Vue.set(this.model, 'children', [])
-            //     this.addChild()
-            //     this.open = true
-            // }
-        },
-        // addChild: function () {
-        //     this.model.children.push({
-        //         name: 'new stuff'
-        //     })
-        // }
+        }
     }
 });
+
+declare let toastr: Toastr;
+
+toastr.options = {
+  "closeButton": true,
+  "debug": false,
+  "newestOnTop": true,
+  "positionClass": "toast-top-right",
+  "preventDuplicates": false,
+  "onclick": null,
+  "timeOut": 3000,
+  "extendedTimeOut": 2000,
+  
+  "showDuration": 1000,  
+  "showEasing": "swing",
+  "showMethod": "fadeIn",
+  
+  "closeEasing": "linear",  
+  "closeMethod": "fadeOut",
+  "closeDuration": 300,  
+}
+
+declare let Spinner: any;
+
+var opts = {
+    lines: 11 // The number of lines to draw
+    , length: 52 // The length of each line
+    , width: 11 // The line thickness
+    , radius: 35 // The radius of the inner circle
+    , scale: 1 // Scales overall size of the spinner
+    , corners: 1 // Corner roundness (0..1)
+    , color: '#000' // #rgb or #rrggbb or array of colors
+    , opacity: 0.25 // Opacity of the lines
+    , rotate: 0 // The rotation offset
+    , direction: 1 // 1: clockwise, -1: counterclockwise
+    , speed: 1 // Rounds per second
+    , trail: 60 // Afterglow percentage
+    , fps: 20 // Frames per second when using setTimeout() as a fallback for CSS
+    , zIndex: 2e9 // The z-index (defaults to 2000000000)
+    , className: 'spinner' // The CSS class to assign to the spinner
+    , top: '50%' // Top position relative to parent
+    , left: '50%' // Left position relative to parent
+    , shadow: false // Whether to render a shadow
+    , hwaccel: false // Whether to use hardware acceleration
+    , position: 'absolute' // Element positioning
+}
+var target = document.getElementById('editor')
+var spinner = new Spinner(opts);
 
 
 interface RscError {
@@ -495,7 +533,10 @@ function rscErrorToAnnotation(e: RscError) {
 
 document.getElementById("verify").onclick = function () {
     let text = editor.getValue();
-    // console.log(text)
+    editor.setReadOnly(true);
+    spinner.spin(target);
+    toastr.clear();
+
     let data = JSON.stringify({ action: 2, program: text });
 
     let xhr = new XMLHttpRequest();
@@ -505,6 +546,10 @@ document.getElementById("verify").onclick = function () {
     xhr.addEventListener('readystatechange', function (e) {
         if (xhr.readyState == 4 && xhr.status == 200) {
             let response = xhr.responseText;
+
+            editor.setReadOnly(false);
+            spinner.stop();
+
             try {
                 let responseJSON = JSON.parse(response);
 
@@ -512,17 +557,20 @@ document.getElementById("verify").onclick = function () {
                 let isSafe = errs.length === 0;
 
                 if (isSafe) {
-                    // safeButton();
-                    console.log('SAFE');
-                } else {                    
+                    toastr.clear();
+                    toastr.success('Your program is safe!') //.css("width","600px")
+                } else {
                     let session = editor.getSession();
-                    removeAllMarkers(session);                    
+                    removeAllMarkers(session);
+                    toastr.clear();
+                    toastr.error('There were errors found:(') //.css("width","600px")
+
                     errs.forEach(error => {
                         let getpos = aceEditorPosition.getAcePositionFromChars;
                         let startRow = error.errLoc.sp_start[1] - 1;
                         let startCol = error.errLoc.sp_start[2] - 1;
-                        let endRow   = error.errLoc.sp_stop[1] - 1;
-                        let endCol   = error.errLoc.sp_stop[2] - 1;
+                        let endRow = error.errLoc.sp_stop[1] - 1;
+                        let endCol = error.errLoc.sp_stop[2] - 1;
                         let range = new AceRange(startRow, startCol, endRow, endCol);
                         rscMarkers.push(session.addMarker(range, "refscript-error", "text", true));
                     });
@@ -530,10 +578,11 @@ document.getElementById("verify").onclick = function () {
                     session.setAnnotations(errs.map(rscErrorToAnnotation));
                 }
 
-            } catch(e) {
+            } catch (e) {
                 // oops...
-                console.log("Error while parsing output of rsc:");
-                console.log(e);
+                let responseHtml = response.split('\n').join('<br/>');
+                toastr.clear();
+                toastr.error(responseHtml, 'CRASH', { allowHtml: true }).css("width", "600px")
             }
         }
     });

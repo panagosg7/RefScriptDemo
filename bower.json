@@ -20,6 +20,7 @@
     "underscore": "^1.8.3",
     "winjs": "^4.4.0",
     "ace": "^1.2.3",
-    "ace-builds": "^1.2.3"
+    "ace-builds": "^1.2.3",
+    "toastr": "^2.1.2"
   }
 }

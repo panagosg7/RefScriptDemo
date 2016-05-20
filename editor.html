@@ -1,0 +1,34 @@
+
+<div class="container">        
+    
+    <div class="row" style="height: 600px">
+        <div class="col-md-3">
+            <script type="text/x-template" id="item-template">
+                <li>
+                    <div :class="{bold: isFolder}" @click="toggle">
+                        {{model.name}} <span v-if="isFolder">[{{open ? '-' : '+'}}]</span>
+                    </div>
+                    <ul v-show="open" v-if="isFolder">
+                        <item class="item" v-for="model in model.children" :model="model">
+                        </item>
+                    </ul>
+                </li>
+            </script>
+            <div style="overflow:auto; position: relative; border: 1px solid grey; height: 100%" >
+                <ul id="demo">
+                    <item class="item" :model="treeData">
+                    </item>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            <div class="row">
+                <div id="editor" style="height: 100%"></div>
+            </div>
+            <div class="row">
+                <button id="verify" type="button" class="btn btn-primary" style="width:100%; margin-top: 5px; height:50px"><b>Verify</b></button>
+            </div>
+        </div>
+    </div>
+</div>

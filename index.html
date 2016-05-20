@@ -8,13 +8,12 @@
     <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
     <!--<link rel="stylesheet" href="/bower_components/bootswatch/flatly/bootstrap.css">-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.css">
-
-
     <link type="text/css" rel="stylesheet" href="stylesheets/style.css" />
     <link type="text/css" rel="stylesheet" href="stylesheets/vue.css" />
 
 </head>
-<body>
+
+<body ng-app="demoApp">
 
     <!-- Static navbar -->
     <nav class="navbar navbar-default navbar-static-top">
@@ -32,7 +31,19 @@
     </nav>
 
     <div class="container">
-        <div class="row">
+        
+        <!--<div class="row">
+            
+            <div class="col-md-3">
+            </div>
+            <div class="col-md-9">
+                <h3>This is test selection</h3>
+            </div>
+            
+        </div>-->
+    
+        
+        <div class="row" style="height: 600px">
             <div class="col-md-3">
                 <script type="text/x-template" id="item-template">
                     <li>
@@ -51,7 +62,7 @@
                         </ul>
                     </li>
                 </script>
-                <div style="overflow:auto; height: 500px; position: relative; border: 1px solid grey;" >
+                <div style="overflow:auto; position: relative; border: 1px solid grey; height: 100%" >
                     <ul id="demo">
                         <item class="item" :model="treeData">
                         </item>
@@ -61,13 +72,18 @@
 
             <div class="col-md-9">
                 <div class="row">
-                    <div id="editor"></div>
+                    <div id="editor" style="height: 100%"></div>
                 </div>
-                <div class="row" style="margin-top:5px;">
-                    <button id="verify" type="button" class="btn btn-primary" style="width:100%; height:60px"><b>Verify</b></button>
+                <div class="row">
+                    <button id="verify" type="button" class="btn btn-primary" style="width:100%; margin-top: 5px; height:50px"><b>Verify</b></button>
                 </div>
             </div>
         </div>
+    </div>
+    
+    
+    
+    <div class="container site-footer-container">
     </div>
 
 </body>
@@ -85,11 +101,17 @@
       };
   </script>
   <script type="text/javascript" src="./scripts/lib/jquery.js"></script>
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.js"></script>
-  <script type="text/javascript" src="http://spin.js.org/spin.min.js"></script>
+  
+  <script type="text/javascript" src="/bower_components/angular/angular.js"></script>
+  <script type="text/javascript" src="/bower_components/angular-ui-router/release/angular-ui-router.js"></script>  
+  
+  <script type="text/javascript" src="/bower_components/toastr/toastr.js"></script>
+  <script type="text/javascript" src="/bower_components/spin.js/spin.js"></script>
 
   <script type="text/javascript" src="./scripts/lib/ace/mode/typescript/typescriptServices.js"></script>
-  <script src="./scripts/lib/require.js" data-main="main" type="text/javascript"></script>
+  <script type="text/javascript" src="./scripts/lib/require.js" data-main="main" ></script>
+    
+    <script type="text/javascript" src="./scripts/app.js" data-main="main" ></script>
 
 
 </html>

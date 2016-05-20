@@ -31,7 +31,7 @@ body{
 }
 #editor {
     position:relative;
-    height:435px;
+    /*height:435px;*/
     border: 1px solid grey;
 }
 

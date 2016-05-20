@@ -1,0 +1,10 @@
+{
+  "dependencies": {},
+  "globalDependencies": {
+    "ace": "registry:dt/ace#0.0.0+20160317120654",
+    "angular": "registry:dt/angular#1.5.0+20160517064839",
+    "toastr": "registry:dt/toastr#2.0.1+20160316155526",
+    "underscore": "registry:dt/underscore#1.7.0+20160505190121",
+    "vue": "registry:dt/vue#1.0.21+20160423143248"
+  }
+}

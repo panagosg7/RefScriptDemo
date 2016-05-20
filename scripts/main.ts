@@ -12,6 +12,28 @@ import _ = require('underscore');
 import Vue = require('vue');
 
 
+// angular
+// .module('demoApp', ['ui.router'])
+// .config(function($stateProvider, $urlRouterProvider) {
+    
+//     // $urlRouterProvider.otherwise('/home');
+    
+//     // $stateProvider
+        
+//     //     // HOME STATES AND NESTED VIEWS ========================================
+//     //     .state('home', {
+//     //         url: '/home',
+//     //         templateUrl: 'partial-home.html'
+//     //     })
+        
+//     //     // ABOUT PAGE AND MULTIPLE NAMED VIEWS =================================
+//     //     .state('about', {
+//     //         // we'll get to this in a bit       
+//     //     });
+        
+// });
+
+
 
 export function defaultFormatCodeOptions(): ts.FormatCodeOptions {
     return {
@@ -45,6 +67,8 @@ let rscMarkers = [];
 
 // Start updating latest
 import {getTSProject} from "./lib/ace/mode/typescript/tsProject";
+
+
 let tsProject = getTSProject();
 
 function loadLibFiles() {
@@ -287,7 +311,6 @@ $(function () {
     // document.getElementById('output').style.fontSize='14px';
 
     loadLibFiles();
-    loadFile("samples/greeter.ts");
 
     editor.addEventListener("change", onUpdateDocument);
     editor.addEventListener("changeSelection", onChangeCursor);
@@ -364,10 +387,10 @@ $(function () {
     //     javascriptRun(outputEditor.getSession().doc.getValue());
     // });
 
-    $("#select-sample").change(function (e) {
-        let path = "samples/" + $(this).val();
-        loadFile(path);
-    });
+    // $("#select-sample").change(function (e) {
+    //     let path = "samples/" + $(this).val();
+    //     loadFile(path);
+    // });
 
 
     editor.getSession().on("verify", e => { });
@@ -462,22 +485,22 @@ Vue.component('item', {
 declare let toastr: Toastr;
 
 toastr.options = {
-  "closeButton": true,
-  "debug": false,
-  "newestOnTop": true,
-  "positionClass": "toast-top-right",
-  "preventDuplicates": false,
-  "onclick": null,
-  "timeOut": 3000,
-  "extendedTimeOut": 2000,
-  
-  "showDuration": 1000,  
-  "showEasing": "swing",
-  "showMethod": "fadeIn",
-  
-  "closeEasing": "linear",  
-  "closeMethod": "fadeOut",
-  "closeDuration": 300,  
+    "closeButton": true,
+    "debug": false,
+    "newestOnTop": true,
+    "positionClass": "toast-top-right",
+    "preventDuplicates": false,
+    "onclick": null,
+    "timeOut": 3000,
+    "extendedTimeOut": 2000,
+
+    "showDuration": 1000,
+    "showEasing": "swing",
+    "showMethod": "fadeIn",
+
+    "closeEasing": "linear",
+    "closeMethod": "fadeOut",
+    "closeDuration": 300,
 }
 
 declare let Spinner: any;

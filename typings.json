@@ -14,5 +14,11 @@
     "serve-favicon": "registry:dt/serve-favicon#0.0.0+20160316155526",
     "serve-static": "registry:dt/serve-static#0.0.0+20160501131543",
     "underscore": "registry:dt/underscore#1.7.0+20160505190121"
+  },
+  "globalDependencies": {
+    "ace": "registry:dt/ace#0.0.0+20160317120654",
+    "toastr": "registry:dt/toastr#2.0.1+20160316155526",
+    "underscore": "registry:dt/underscore#1.7.0+20160505190121",
+    "vue": "registry:dt/vue#1.0.21+20160423143248"
   }
 }

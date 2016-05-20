@@ -8,13 +8,11 @@
     <link rel="stylesheet" href="/bower_components/bootstrap/dist/css/bootstrap.min.css">
     <!--<link rel="stylesheet" href="/bower_components/bootswatch/flatly/bootstrap.css">-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.css">
-
-
     <link type="text/css" rel="stylesheet" href="stylesheets/style.css" />
     <link type="text/css" rel="stylesheet" href="stylesheets/vue.css" />
 
 </head>
-<body>
+<body ng-app="demoApp">
 
     <!-- Static navbar -->
     <nav class="navbar navbar-default navbar-static-top">
@@ -85,10 +83,17 @@
       };
   </script>
   <script type="text/javascript" src="./scripts/lib/jquery.js"></script>
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.js"></script>
-  <script type="text/javascript" src="http://spin.js.org/spin.min.js"></script>
-
+  
+  <script type="text/javascript" src="/bower_components/toastr/toastr.js"></script>
+  <script type="text/javascript" src="/bower_components/spin.js/spin.js"></script>
+  <script type="text/javascript" src="/bower_components/angular/angular.js"></script>
+  <script type="text/javascript" src="/bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+  
   <script type="text/javascript" src="./scripts/lib/ace/mode/typescript/typescriptServices.js"></script>
+  
+  <script src="./scripts/app.js" type="text/javascript"></script>
+
+
   <script src="./scripts/lib/require.js" data-main="main" type="text/javascript"></script>
 
 

@@ -374,6 +374,20 @@ $(function () {
 
 });
 
+/* Example selection */
+const EXAMPLE_COUNT = 3;
+for (let i = 0; i < EXAMPLE_COUNT; i++) {
+    let el = document.getElementById('example' + (i + 1));
+    el.onclick = showFoo(i);
+}
+
+function showFoo(c: number) {
+    return function () {
+        console.log('I am example' + c);
+        return false;
+    }
+}
+
 
 /* VUE */
 
@@ -462,22 +476,22 @@ Vue.component('item', {
 declare let toastr: Toastr;
 
 toastr.options = {
-  "closeButton": true,
-  "debug": false,
-  "newestOnTop": true,
-  "positionClass": "toast-top-right",
-  "preventDuplicates": false,
-  "onclick": null,
-  "timeOut": 3000,
-  "extendedTimeOut": 2000,
-  
-  "showDuration": 1000,  
-  "showEasing": "swing",
-  "showMethod": "fadeIn",
-  
-  "closeEasing": "linear",  
-  "closeMethod": "fadeOut",
-  "closeDuration": 300,  
+    "closeButton": true,
+    "debug": false,
+    "newestOnTop": true,
+    "positionClass": "toast-top-right",
+    "preventDuplicates": false,
+    "onclick": null,
+    "timeOut": 3000,
+    "extendedTimeOut": 2000,
+
+    "showDuration": 1000,
+    "showEasing": "swing",
+    "showMethod": "fadeIn",
+
+    "closeEasing": "linear",
+    "closeMethod": "fadeOut",
+    "closeDuration": 300,
 }
 
 declare let Spinner: any;
@@ -561,7 +575,7 @@ document.getElementById("verify").onclick = function () {
                     removeAllMarkers(session);
                     toastr.clear();
                     toastr.error('There were errors found:(') //.css("width","600px")
-                    console.log(errs);
+                    // console.log(errs);
 
                     errs.forEach(error => {
                         let getpos = aceEditorPosition.getAcePositionFromChars;

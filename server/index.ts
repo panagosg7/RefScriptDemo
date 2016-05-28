@@ -21,6 +21,7 @@ app.set('port', process.env.PORT || 3003);
 let serverPort = app.get('port');
 
 app.use(express.static(path.join(__dirname, '../')));
+app.use(express.static(path.join(__dirname, '../html')));
 
 
 // Routes

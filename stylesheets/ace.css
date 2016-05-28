@@ -1,38 +1,10 @@
-body{
-    /*background: #333;*/
-    color: white;
-}
 
-::-webkit-scrollbar {
-   width: 8px;
-   height: 8px;
-}
-::-webkit-scrollbar-track,
-::-webkit-scrollbar-corner {
-    background: #222425;
-}
-::-webkit-scrollbar-thumb {
-   background: #AAA;
-   border-radius: 5px;
-   box-shadow: 0 0 1px black inset;
-}
-
-.warp-container{
-    float:left;
-    width:49%;
-}
-
-.editor-container {
-    position:relative;
-    /* padding:20px; */
-    height:100%;
-    width:99%;
-    float:left;
-}
 #editor {
     position:relative;
-    height:435px;
-    border: 1px solid grey;
+    max-height: 768px;
+    border: 2px solid #D0D0D0;
+    border-radius: 5px;
+
 }
 
 .typescript-ref{

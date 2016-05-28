@@ -5,7 +5,6 @@ import * as child_process   from 'child_process';
 import * as fs              from 'fs';
 import * as glob            from 'glob';
 import * as _               from 'underscore';
-import * as fs              from 'fs';
 
 let exec = child_process.exec;
 
@@ -40,6 +39,8 @@ export function verify(req: express.Request, res: express.Response) {
 
     // Form command
     let cmd = [refscriptBin, '--dumpjson', tsrc, '>', '/dev/null', '2>', logfile].join(' ');
+    
+    console.log(cmd);
     
     // Fire command
     exec(cmd, function (error, stdout, stderr) {        

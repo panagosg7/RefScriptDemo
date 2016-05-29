@@ -1,4 +1,4 @@
-<html>
+<html ng-app='RefScriptDemo'>
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -33,19 +33,17 @@
        </div>
     </div>
 
-    <div class="container container-fluid wrapper">
+    <div class="container container-fluid wrapper" ng-controller="DemoCtrl">
         <div class="row-fluid columns content">
-
                     
             <!-- sidebar -->
             <div class="col-xs-4 col-sm-3" role="navigation">
-                <ul class="nav">
-                    <!--<li class="active"><a href="#">Home</a></li>-->
-                    <li><a id="example1" href="#">Example 1</a></li>
-                    <li><a id="example2" href="#">Example 2</a></li>
-                    <li><a id="example3" href="#">Example 3</a></li>                              
-                </ul>
-                        
+                <ul class='nav'>
+                    <li ng-repeat='file in demoFiles.content track by $index'>
+                        <a href="#" ng-cloak>{{file}}</a>
+                    </li>
+                </ul>                        
+                
                 <button type="button" id="verify" class="btn btn-block padded-btn btn-primary"><b>Verify</b></button>
                 
                 <!--<script type="text/x-template" id="item-template">
@@ -91,17 +89,17 @@
           paths: {
               ace       : "./lib/ace", // path of ace relative to baseUrl
               underscore: "../bower_components/underscore/underscore-min",
-              vue       : "../bower_components/vue/dist/vue",
+            //vue       : "../bower_components/vue/dist/vue",
               bootstrap : "../bower_compoenets/bootstrap/dist/js/bootstrap.js"
           }
       };
 </script>
 <script type="text/javascript" src="./scripts/lib/jquery.js"></script>
-
+<script type="text/javascript" src="../bower_components/angular/angular.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.js"></script>
 <script type="text/javascript" src="http://spin.js.org/spin.min.js"></script>
-
 <script type="text/javascript" src="./scripts/lib/ace/mode/typescript/typescriptServices.js"></script>
-<script src="./scripts/lib/require.js" data-main="main" type="text/javascript"></script>
+<script type="text/javascript" src="./scripts/app.js" ></script>
+<script type="text/javascript" src="./scripts/lib/require.js" data-main="main" ></script>
 
 </html>

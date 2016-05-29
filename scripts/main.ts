@@ -8,9 +8,8 @@ import {EditorPosition} from 'EditorPosition';
 import {CompletionService} from './CompletionService';
 import {deferredCall} from "ace/lib/lang";
 
-import _ = require('underscore');
-import Vue = require('vue');
-
+import _       = require('underscore');
+import Vue     = require('vue');
 
 
 export function defaultFormatCodeOptions(): ts.FormatCodeOptions {
@@ -374,104 +373,116 @@ $(function () {
 
 });
 
-/* Example selection */
-const EXAMPLE_COUNT = 3;
-for (let i = 0; i < EXAMPLE_COUNT; i++) {
-    let el = document.getElementById('example' + (i + 1));
-    el.onclick = showFoo(i);
-}
-
-function showFoo(c: number) {
-    return function () {
-        console.log('I am example' + c);
-        return false;
-    }
-}
 
 
-/* VUE */
 
-function getServerURL() {
-    return window.location.protocol + "//" + window.location.host;
-}
+// /* Example selection */
+// const EXAMPLE_COUNT = 3;
+// for (let i = 0; i < EXAMPLE_COUNT; i++) {
+//     let el = document.getElementById('example' + (i + 1));
+//     el.onclick = showFoo(i);
 
-(function () {
-    // Get the test list
-    let xhr = new XMLHttpRequest();
-    xhr.open('GET', getServerURL() + '/files', true);
-    xhr.send();
-    xhr.addEventListener('readystatechange', function (e) {
-        if (xhr.readyState == 4 && xhr.status == 200) {
-            // For some reason we have to do `JSON.parse` twice
-            let tests = JSON.parse(JSON.parse(xhr.responseText));
-            let data = {
-                name: 'Test Directory',
-                children: tests
-            };
-
-            // boot up the demo
-            let demo = new Vue({
-                el: '#demo',
-                data: {
-                    treeData: data
-                }
-            });
-        }
-
-    });
-})();
+//     function showFoo(c: number) {
+//         return function () {
+//             console.log('I am example' + c);
+//             return false;
+//         }
+//     }
+// }
 
 
-// define the item component
-Vue.component('item', {
-    template: '#item-template',
-    props: {
-        model: Object
-    },
-    data: function () {
-        return {
-            open: false
-        }
-    },
-    computed: {
-        isFolder: function () {
-            return this.model.children && this.model.children.length;
-        }
-    },
-    methods: {
-        toggle: function () {
-            if (this.isFolder) {
-                this.open = !this.open
-            } else {
-                // Compute the file path
-                let chain: any = [];
-                let u = this;
-                while (u) {
-                    if (u.model && u.model.name) {
-                        chain.push(u.model.name);
-                    }
-                    u = u.$parent;
-                }
-                chain.reverse();
-                chain = chain.slice(1).join('/');
 
-                // Request file from server
-                let xhr = new XMLHttpRequest();
-                xhr.open('POST', '/load-test', true);
-                xhr.setRequestHeader("Content-type", "application/json");
-                xhr.send(JSON.stringify({ 'name': chain }));
-                xhr.addEventListener('readystatechange', function (e) {
-                    if (xhr.readyState == 4 && xhr.status == 200) {
-                        let fileText = '// file: ' + chain + '\n' + xhr.responseText;
-                        let session = editor.getSession();
-                        removeAllMarkers(session);
-                        session.setValue(fileText);
-                    }
-                });
-            }
-        }
-    }
-});
+
+// /* VUE */
+
+// function getServerURL() {
+//     return window.location.protocol + "//" + window.location.host;
+// }
+
+// (function () {
+//     // Get the test list
+//     let xhr = new XMLHttpRequest();
+//     xhr.open('GET', getServerURL() + '/files', true);
+//     xhr.send();
+//     xhr.addEventListener('readystatechange', function (e) {
+//         if (xhr.readyState == 4 && xhr.status == 200) {
+//             // For some reason we have to do `JSON.parse` twice
+//             let tests = JSON.parse(JSON.parse(xhr.responseText));
+            
+//             console.log(tests)
+            
+            
+//             // let data = {
+//             //     name: 'Test Directory',
+//             //     children: tests
+//             // };
+
+//             // // boot up the demo
+//             // let demo = new Vue({
+//             //     el: '#demo',
+//             //     data: {
+//             //         treeData: data
+//             //     }
+//             // });
+//         }
+
+//     });
+// })();
+
+
+// // define the item component
+// Vue.component('item', {
+//     template: '#item-template',
+//     props: {
+//         model: Object
+//     },
+//     data: function () {
+//         return {
+//             open: false
+//         }
+//     },
+//     computed: {
+//         isFolder: function () {
+//             return this.model.children && this.model.children.length;
+//         }
+//     },
+//     methods: {
+//         toggle: function () {
+//             if (this.isFolder) {
+//                 this.open = !this.open
+//             } else {
+//                 // Compute the file path
+//                 let chain: any = [];
+//                 let u = this;
+//                 while (u) {
+//                     if (u.model && u.model.name) {
+//                         chain.push(u.model.name);
+//                     }
+//                     u = u.$parent;
+//                 }
+//                 chain.reverse();
+//                 chain = chain.slice(1).join('/');
+
+//                 // Request file from server
+//                 let xhr = new XMLHttpRequest();
+//                 xhr.open('POST', '/load-test', true);
+//                 xhr.setRequestHeader("Content-type", "application/json");
+//                 xhr.send(JSON.stringify({ 'name': chain }));
+//                 xhr.addEventListener('readystatechange', function (e) {
+//                     if (xhr.readyState == 4 && xhr.status == 200) {
+//                         let fileText = '// file: ' + chain + '\n' + xhr.responseText;
+//                         let session = editor.getSession();
+//                         removeAllMarkers(session);
+//                         session.setValue(fileText);
+//                     }
+//                 });
+//             }
+//         }
+//     }
+// });
+
+
+/// Toaster ///////////////
 
 declare let toastr: Toastr;
 
@@ -541,6 +552,8 @@ function rscErrorToAnnotation(e: RscError) {
     };
 }
 
+
+/// Verify Button ///////////////
 
 document.getElementById("verify").onclick = function () {
     let text = editor.getValue();

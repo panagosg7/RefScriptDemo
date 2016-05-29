@@ -25,7 +25,8 @@ app.use(express.static(path.join(__dirname, '../html')));
 
 
 // Routes
-app.get ('/files'    , routes.fileList);
+app.get ('/files'    , routes.getAllFiles);
+app.get ('/demo'     , routes.getDemoFiles);
 app.post('/load-test', routes.loadTest);
 app.post('/verify'   , routes.verify);
 

@@ -1,16 +1,15 @@
 import {javascriptRun, readFile} from "./utils";
 
+import {Range as AceRange}  from 'ace/range';
+import {AutoComplete}       from './AutoComplete';
+import {EditorPosition}     from 'EditorPosition';
+import {CompletionService}  from './CompletionService';
+import {deferredCall}       from "ace/lib/lang";
+
 import ace = require('ace/ace');
-import {Range as AceRange} from 'ace/range';
-import {AutoComplete} from './AutoComplete';
 import lang = require("ace/lib/lang");
-import {EditorPosition} from 'EditorPosition';
-import {CompletionService} from './CompletionService';
-import {deferredCall} from "ace/lib/lang";
-
-import _       = require('underscore');
-import Vue     = require('vue');
-
+import _ = require('underscore');
+import Vue = require('vue');
 
 export function defaultFormatCodeOptions(): ts.FormatCodeOptions {
     return {
@@ -279,11 +278,9 @@ $(function () {
     // editor.setTheme("ace/theme/monokai");
     editor.getSession().setMode('ace/mode/typescript');
 
-    // outputEditor = ace.edit("output");
-    // outputEditor.setTheme("ace/theme/monokai");
-    // outputEditor.getSession().setMode('ace/mode/javascript');
+    editor.$blockScrolling = Infinity;
+    
     document.getElementById('editor').style.fontSize = '16px';
-    // document.getElementById('output').style.fontSize='14px';
 
     loadLibFiles();
     loadFile("samples/greeter.ts");
@@ -358,11 +355,6 @@ $(function () {
         });
     });
 
-
-    // $("#javascript-run").click(function(e){
-    //     javascriptRun(outputEditor.getSession().doc.getValue());
-    // });
-
     $("#select-sample").change(function (e) {
         let path = "samples/" + $(this).val();
         loadFile(path);
@@ -374,21 +366,60 @@ $(function () {
 });
 
 
+/// XHR auxiliary ///////////////
+
+function xhrGet(path: string, cb: (fs: string) => void) {
+    const serverURL = window.location.protocol + "//" + window.location.host;
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', serverURL + path, true);
+    xhr.send();
+    xhr.addEventListener('readystatechange', e => {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            cb(xhr.responseText);
+        }
+    });
+}
+
+function xhrPost(path: string, data: any, cb: (fs: string) => void) {
+    const serverURL = window.location.protocol + "//" + window.location.host;
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', serverURL + path, true);
+    xhr.setRequestHeader("Content-type", "application/json");
+    xhr.send(JSON.stringify(data));
+    xhr.addEventListener('readystatechange', e => {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            cb(xhr.responseText);
+        }
+    });
+}
 
 
-// /* Example selection */
-// const EXAMPLE_COUNT = 3;
-// for (let i = 0; i < EXAMPLE_COUNT; i++) {
-//     let el = document.getElementById('example' + (i + 1));
-//     el.onclick = showFoo(i);
+/// Demo list ///////////////
 
-//     function showFoo(c: number) {
-//         return function () {
-//             console.log('I am example' + c);
-//             return false;
-//         }
-//     }
-// }
+const demoList: any = new Vue({
+    el: '#demo-list',
+    data: {
+        items: []
+    },
+    methods: {
+        greet: function (idx) {
+            const file = this.items[idx].message;
+            xhrPost('/load-test', { name: 'demo/' + file }, res => {
+                let fileText = /* '// file: ' + file + '\n' + */ res;
+                let session = editor.getSession();
+                removeAllMarkers(session);
+                session.setValue(fileText);
+            });
+        }
+    }
+
+})
+
+xhrGet('/demo', (fs: string) => {
+    demoList.$data.items = JSON.parse(JSON.parse(fs)).map(f => {
+        return { message: f };
+    });
+});
 
 
 
@@ -408,10 +439,10 @@ $(function () {
 //         if (xhr.readyState == 4 && xhr.status == 200) {
 //             // For some reason we have to do `JSON.parse` twice
 //             let tests = JSON.parse(JSON.parse(xhr.responseText));
-            
+
 //             console.log(tests)
-            
-            
+
+
 //             // let data = {
 //             //     name: 'Test Directory',
 //             //     children: tests

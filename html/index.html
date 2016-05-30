@@ -38,38 +38,50 @@
 
             <!-- sidebar -->
             <div class="col-xs-4 col-sm-3" role="navigation">
+                
+                <div class="row-fluid">
 
-                <div class="list-group" id="demo-list">
-                    <a class="list-group-item active">Demo</a>
-                    <a v-for="item in items" track-by="$index" href="#" class="list-group-item" v-on:click="select($index)">
-                        <div v-cloak>
-                            {{ item.message }}
-                        </div>
-                    </a>
+                    <div class="list-group" id="demo-list">
+                        <a class="list-group-item active">Demo</a>
+                        <a v-for="item in items" track-by="$index" href="#" class="list-group-item" v-on:click="select($index)">
+                            <div v-cloak>
+                                {{ item.message }}
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="row-fluid"  style="margin-bottom: 5px;">
+
+                    <div class="dropdown">
+                        <button class="btn btn-block padded-btn btn-primary dropdown-toggle" type="button" id="menu1" data-toggle="dropdown">Positive Tests
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu scrollable-menu" role="menu" aria-labelledby="menu1" id="pos-list">
+                            <li role="presentation" v-for="item in items" track-by="$index">
+                                <a role="menuitem" tabindex="-1" href="#" v-on:click="select($index)">{{ item.message }}</a>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                </div>
+                
+                <div class="row-fluid"  style="margin-bottom: 5px;">
+                    <div class="dropdown">
+                        <button class="btn btn-block padded-btn btn-primary dropdown-toggle" type="button" id="menu1" data-toggle="dropdown">Negative Tests
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu scrollable-menu" role="menu" aria-labelledby="menu1" id="neg-list">
+                            <li role="presentation" v-for="item in items" track-by="$index">
+                                <a role="menuitem" tabindex="-1" href="#" v-on:click="select($index)">{{ item.message }}</a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
 
-                <div class="dropdown">
-                    <button class="btn btn-block btn-primary dropdown-toggle" type="button" id="menu1" data-toggle="dropdown">Positive Tests
-                        <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu scrollable-menu" role="menu" aria-labelledby="menu1" id="pos-list">
-                        <li role="presentation" v-for="item in items" track-by="$index">
-                            <a role="menuitem" tabindex="-1" href="#" v-on:click="select($index)">{{ item.message }}</a>
-                        </li>
-                    </ul>
+                <div class="row-fluid">                
+                    <button type="button" id="verify" class="btn btn-block padded-btn btn-primary"><b>Verify</b></button>
                 </div>
-                <div class="dropdown">
-                    <button class="btn btn-block btn-primary dropdown-toggle" type="button" id="menu1" data-toggle="dropdown">Negative Tests
-                        <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu scrollable-menu" role="menu" aria-labelledby="menu1" id="neg-list">
-                        <li role="presentation" v-for="item in items" track-by="$index">
-                            <a role="menuitem" tabindex="-1" href="#" v-on:click="select($index)">{{ item.message }}</a>
-                        </li>
-                    </ul>
-                </div>
-
-                <button type="button" id="verify" class="btn btn-block padded-btn btn-primary"><b>Verify</b></button>
 
                 <!--<script type="text/x-template" id="item-template">
                     <li>

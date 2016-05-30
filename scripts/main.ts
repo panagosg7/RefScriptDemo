@@ -283,8 +283,8 @@ $(function () {
     document.getElementById('editor').style.fontSize = '14px';
 
     loadLibFiles();
-    loadFile("samples/greeter.ts");
-
+    loadFile("samples/empty.ts");
+    
     editor.addEventListener("change", onUpdateDocument);
     editor.addEventListener("changeSelection", onChangeCursor);
 
@@ -393,10 +393,20 @@ function xhrPost(path: string, data: any, cb: (fs: string) => void) {
 /// Demo list ///////////////
 
 xhrGet('/demo', (fs: string) => {
+    let files = JSON.parse(JSON.parse(fs));
+    if (files.length > 0) {
+        const file = files[0];
+        xhrPost('/load-test', { name: 'demo/' + file }, res => {
+            let fileText = '// File: demo/' + file + '\n' + res;
+            let session = editor.getSession();
+            removeAllMarkers(session);
+            session.setValue(fileText);
+        });
+    } 
     new Vue({
         el: '#demo-list',
         data: {
-            items: JSON.parse(JSON.parse(fs)).map(f => {
+            items: files.map(f => {
                 return { message: f };
             })
         },
@@ -404,7 +414,7 @@ xhrGet('/demo', (fs: string) => {
             select: function (idx) {
                 const file = this.items[idx].message;
                 xhrPost('/load-test', { name: 'demo/' + file }, res => {
-                    let fileText = /* '// file: ' + file + '\n' + */ res;
+                    let fileText = '// File: demo/' + file + '\n' + res;
                     let session = editor.getSession();
                     removeAllMarkers(session);
                     session.setValue(fileText);
@@ -441,94 +451,6 @@ function loadRegressionTests(type: string) {
 
 loadRegressionTests('pos');
 loadRegressionTests('neg');
-
-// /* VUE */
-
-// function getServerURL() {
-//     return window.location.protocol + "//" + window.location.host;
-// }
-
-// (function () {
-//     // Get the test list
-//     let xhr = new XMLHttpRequest();
-//     xhr.open('GET', getServerURL() + '/files', true);
-//     xhr.send();
-//     xhr.addEventListener('readystatechange', function (e) {
-//         if (xhr.readyState == 4 && xhr.status == 200) {
-//             // For some reason we have to do `JSON.parse` twice
-//             let tests = JSON.parse(JSON.parse(xhr.responseText));
-
-//             console.log(tests)
-
-
-//             // let data = {
-//             //     name: 'Test Directory',
-//             //     children: tests
-//             // };
-
-//             // // boot up the demo
-//             // let demo = new Vue({
-//             //     el: '#demo',
-//             //     data: {
-//             //         treeData: data
-//             //     }
-//             // });
-//         }
-
-//     });
-// })();
-
-
-// // define the item component
-// Vue.component('item', {
-//     template: '#item-template',
-//     props: {
-//         model: Object
-//     },
-//     data: function () {
-//         return {
-//             open: false
-//         }
-//     },
-//     computed: {
-//         isFolder: function () {
-//             return this.model.children && this.model.children.length;
-//         }
-//     },
-//     methods: {
-//         toggle: function () {
-//             if (this.isFolder) {
-//                 this.open = !this.open
-//             } else {
-//                 // Compute the file path
-//                 let chain: any = [];
-//                 let u = this;
-//                 while (u) {
-//                     if (u.model && u.model.name) {
-//                         chain.push(u.model.name);
-//                     }
-//                     u = u.$parent;
-//                 }
-//                 chain.reverse();
-//                 chain = chain.slice(1).join('/');
-
-//                 // Request file from server
-//                 let xhr = new XMLHttpRequest();
-//                 xhr.open('POST', '/load-test', true);
-//                 xhr.setRequestHeader("Content-type", "application/json");
-//                 xhr.send(JSON.stringify({ 'name': chain }));
-//                 xhr.addEventListener('readystatechange', function (e) {
-//                     if (xhr.readyState == 4 && xhr.status == 200) {
-//                         let fileText = '// file: ' + chain + '\n' + xhr.responseText;
-//                         let session = editor.getSession();
-//                         removeAllMarkers(session);
-//                         session.setValue(fileText);
-//                     }
-//                 });
-//             }
-//         }
-//     }
-// });
 
 
 /// Toaster ///////////////

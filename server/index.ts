@@ -28,6 +28,8 @@ app.use(express.static(path.join(__dirname, '../html')));
 app.get ('/files'    , routes.getAllFiles);
 app.get ('/demo'     , routes.getDemoFiles);
 app.post('/load-test', routes.loadTest);
+app.get ('/pos-tests', routes.getPosTests);
+app.get ('/neg-tests', routes.getNegTests);
 app.post('/verify'   , routes.verify);
 
 function handle404(err: any, req: express.Request, res: express.Response, next: Function) {

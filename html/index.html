@@ -38,15 +38,36 @@
 
             <!-- sidebar -->
             <div class="col-xs-4 col-sm-3" role="navigation">
-                
+
                 <div class="list-group" id="demo-list">
                     <a class="list-group-item active">Demo</a>
-                    <a v-for="item in items" track-by="$index" href="#" class="list-group-item" v-on:click="greet($index)">
+                    <a v-for="item in items" track-by="$index" href="#" class="list-group-item" v-on:click="select($index)">
                         <div v-cloak>
                             {{ item.message }}
                         </div>
-                    </a>                    
-                </div>                                
+                    </a>
+                </div>
+
+                <div class="dropdown">
+                    <button class="btn btn-block btn-primary dropdown-toggle" type="button" id="menu1" data-toggle="dropdown">Positive Tests
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu scrollable-menu" role="menu" aria-labelledby="menu1" id="pos-list">
+                        <li role="presentation" v-for="item in items" track-by="$index">
+                            <a role="menuitem" tabindex="-1" href="#" v-on:click="select($index)">{{ item.message }}</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="dropdown">
+                    <button class="btn btn-block btn-primary dropdown-toggle" type="button" id="menu1" data-toggle="dropdown">Negative Tests
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu scrollable-menu" role="menu" aria-labelledby="menu1" id="neg-list">
+                        <li role="presentation" v-for="item in items" track-by="$index">
+                            <a role="menuitem" tabindex="-1" href="#" v-on:click="select($index)">{{ item.message }}</a>
+                        </li>
+                    </ul>
+                </div>
 
                 <button type="button" id="verify" class="btn btn-block padded-btn btn-primary"><b>Verify</b></button>
 
@@ -87,14 +108,15 @@
         paths: {
             ace       : "./lib/ace", // path of ace relative to baseUrl
             underscore: "../bower_components/underscore/underscore-min",
-            vue       : "../bower_components/vue/dist/vue",
-            bootstrap : "../bower_compoenets/bootstrap/dist/js/bootstrap.js"
+            vue       : "../bower_components/vue/dist/vue"
         }
     };
 </script>
-<script type="text/javascript" src="./scripts/lib/jquery.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.js"></script>
-<script type="text/javascript" src="http://spin.js.org/spin.min.js"></script>
+<script type="text/javascript" src="../bower_components/jquery/dist/jquery.js"></script>
+<script type="text/javascript" src="../bower_components/toastr/toastr.js"></script>
+<script type="text/javascript" src="../bower_components/spin.js/spin.js"></script>
+<script type="text/javascript" src="../bower_components/bootstrap/dist/js/bootstrap.js"></script>
+
 <script type="text/javascript" src="./scripts/lib/ace/mode/typescript/typescriptServices.js"></script>
 <script type="text/javascript" src="./scripts/lib/require.js" data-main="main" ></script>
 

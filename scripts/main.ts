@@ -279,8 +279,8 @@ $(function () {
     editor.getSession().setMode('ace/mode/typescript');
 
     editor.$blockScrolling = Infinity;
-    
-    document.getElementById('editor').style.fontSize = '16px';
+
+    document.getElementById('editor').style.fontSize = '14px';
 
     loadLibFiles();
     loadFile("samples/greeter.ts");
@@ -338,10 +338,6 @@ $(function () {
         }
     });
 
-    // editor.getSession().on("compiled", function(e){
-    //     outputEditor.getSession().doc.setValue(e.data);
-    // });
-
     editor.getSession().on("compileErrors", function (e) {
         let session = editor.getSession();
         removeAllMarkers(session);
@@ -396,33 +392,55 @@ function xhrPost(path: string, data: any, cb: (fs: string) => void) {
 
 /// Demo list ///////////////
 
-const demoList: any = new Vue({
-    el: '#demo-list',
-    data: {
-        items: []
-    },
-    methods: {
-        greet: function (idx) {
-            const file = this.items[idx].message;
-            xhrPost('/load-test', { name: 'demo/' + file }, res => {
-                let fileText = /* '// file: ' + file + '\n' + */ res;
-                let session = editor.getSession();
-                removeAllMarkers(session);
-                session.setValue(fileText);
-            });
-        }
-    }
-
-})
-
 xhrGet('/demo', (fs: string) => {
-    demoList.$data.items = JSON.parse(JSON.parse(fs)).map(f => {
-        return { message: f };
+    new Vue({
+        el: '#demo-list',
+        data: {
+            items: JSON.parse(JSON.parse(fs)).map(f => {
+                return { message: f };
+            })
+        },
+        methods: {
+            select: function (idx) {
+                const file = this.items[idx].message;
+                xhrPost('/load-test', { name: 'demo/' + file }, res => {
+                    let fileText = /* '// file: ' + file + '\n' + */ res;
+                    let session = editor.getSession();
+                    removeAllMarkers(session);
+                    session.setValue(fileText);
+                });
+            }
+        }
     });
 });
 
+function loadRegressionTests(type: string) {
+    xhrGet('/' + type + '-tests', (fs: string) => {
+        // console.log(JSON.parse(JSON.parse(fs)))
+        new Vue({
+            el: '#' + type + '-list',
+            data: {
+                items: JSON.parse(JSON.parse(fs)).map(f => {
+                    return { message: f };
+                })
+            },
+            methods: {
+                select: function (idx) {
+                    const file = this.items[idx].message;
+                    xhrPost('/load-test', { name: type + '/' + file }, res => {
+                        let fileText = /* '// file: ' + file + '\n' + */ res;
+                        let session = editor.getSession();
+                        removeAllMarkers(session);
+                        session.setValue(fileText);
+                    });
+                }
+            }
+        });
+    });
+}
 
-
+loadRegressionTests('pos');
+loadRegressionTests('neg');
 
 // /* VUE */
 

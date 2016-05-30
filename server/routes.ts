@@ -15,7 +15,9 @@ let exec = child_process.exec;
 const refscriptBaseDir = path.join(__dirname, '/../refscript');
 const refscriptTestDir = path.join(refscriptBaseDir, '/tests');
 const refscriptDemoDir = path.join(refscriptTestDir, '/demo');
-const refscriptBin = path.join(refscriptBaseDir, '/.stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/rsc/rsc');
+const refscriptPosDir  = path.join(refscriptTestDir, '/pos');
+const refscriptNegDir  = path.join(refscriptTestDir, '/neg');
+const refscriptBin     = path.join(refscriptBaseDir, '/.stack-work/dist/x86_64-linux/Cabal-1.22.5.0/build/rsc/rsc');
 
 export function verify(req: express.Request, res: express.Response) {
 
@@ -69,6 +71,8 @@ export function verify(req: express.Request, res: express.Response) {
 // }
 
 export const getDemoFiles = getFiles(refscriptDemoDir);
+export const getPosTests  = getFiles(refscriptPosDir);
+export const getNegTests  = getFiles(refscriptNegDir);
 export const getAllFiles  = getFiles(refscriptTestDir);
 
 function getFiles(dir: string) {

@@ -34,7 +34,7 @@ http://basarat.github.io/TypeScriptEditor/
 
 #### Client
 
-    cd client
+    cd scripts
     typings install
     tsc
     cd ..

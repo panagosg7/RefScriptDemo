@@ -14,9 +14,6 @@ http://basarat.github.io/TypeScriptEditor/
 
     npm install
     bower install
-    git submodule init
-    git submodule update
-
 
 ### Build
 
